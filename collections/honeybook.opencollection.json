@@ -1,0 +1,260 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "HoneyBook API (Modeled)",
+    "version": "1.0-modeled",
+    "description": "Not an official HoneyBook collection. HoneyBook has no documented public API; this models the logical resource surface implied by its product and Zapier trigger events against an unverified base URL."
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "token": "{{accessToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Clients",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List clients and inquiries.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.honeybook.com/v1/clients" },
+          "docs": "Modeled from the New Client / New Inquiry Zapier triggers. Not a confirmed endpoint."
+        },
+        {
+          "info": { "name": "Create a client or inquiry.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/clients",
+            "body": { "type": "json", "data": "{\n  \"name\": \"Jane Client\",\n  \"email\": \"jane@example.com\",\n  \"status\": \"inquiry\"\n}" }
+          },
+          "docs": "Creates a client or inquiry."
+        },
+        {
+          "info": { "name": "Retrieve a client.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/clients/:id",
+            "params": [
+              { "name": "id", "value": "", "type": "path", "description": "The ID of the client." }
+            ]
+          },
+          "docs": "Retrieves a client or inquiry by ID."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Projects",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List projects.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.honeybook.com/v1/projects" },
+          "docs": "Lists projects in the pipeline."
+        },
+        {
+          "info": { "name": "Create a project.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/projects",
+            "body": { "type": "json", "data": "{\n  \"name\": \"Fall Wedding\",\n  \"client_id\": \"\"\n}" }
+          },
+          "docs": "Creates a project."
+        },
+        {
+          "info": { "name": "Retrieve a project.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/projects/:id",
+            "params": [
+              { "name": "id", "value": "", "type": "path", "description": "The ID of the project." }
+            ]
+          },
+          "docs": "Modeled from the Project Booked / Project Stage Changed Zapier triggers."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Contracts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List contracts for a project.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/projects/:project_id/contracts",
+            "params": [
+              { "name": "project_id", "value": "", "type": "path", "description": "The ID of the project." }
+            ]
+          },
+          "docs": "Lists contracts for a project."
+        },
+        {
+          "info": { "name": "Create a contract.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/projects/:project_id/contracts",
+            "params": [
+              { "name": "project_id", "value": "", "type": "path", "description": "The ID of the project." }
+            ],
+            "body": { "type": "json", "data": "{\n  \"title\": \"Service Agreement\"\n}" }
+          },
+          "docs": "Creates a contract for a project."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Proposals",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List proposals for a project.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/projects/:project_id/proposals",
+            "params": [
+              { "name": "project_id", "value": "", "type": "path", "description": "The ID of the project." }
+            ]
+          },
+          "docs": "Lists proposals for a project."
+        },
+        {
+          "info": { "name": "Create a proposal.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/projects/:project_id/proposals",
+            "params": [
+              { "name": "project_id", "value": "", "type": "path", "description": "The ID of the project." }
+            ],
+            "body": { "type": "json", "data": "{\n  \"title\": \"Wedding Package\"\n}" }
+          },
+          "docs": "Creates a proposal (quote + contract + invoice) for a project."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Invoices",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List invoices for a project.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/projects/:project_id/invoices",
+            "params": [
+              { "name": "project_id", "value": "", "type": "path", "description": "The ID of the project." }
+            ]
+          },
+          "docs": "Lists invoices for a project."
+        },
+        {
+          "info": { "name": "Create an invoice.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/projects/:project_id/invoices",
+            "params": [
+              { "name": "project_id", "value": "", "type": "path", "description": "The ID of the project." }
+            ],
+            "body": { "type": "json", "data": "{\n  \"amount_due\": 1250.00,\n  \"due_date\": \"2026-08-01\"\n}" }
+          },
+          "docs": "Creates an invoice for a project."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Payments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List payments.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.honeybook.com/v1/payments" },
+          "docs": "Modeled from the Payment Received Zapier trigger."
+        },
+        {
+          "info": { "name": "Retrieve a payment.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/payments/:id",
+            "params": [
+              { "name": "id", "value": "", "type": "path", "description": "The ID of the payment." }
+            ]
+          },
+          "docs": "Retrieves a payment by ID."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Scheduler",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List session types.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.honeybook.com/v1/scheduler/session-types" },
+          "docs": "Scheduler is available on Essentials and Premium plans."
+        },
+        {
+          "info": { "name": "List bookings.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.honeybook.com/v1/scheduler/bookings" },
+          "docs": "Lists scheduled bookings."
+        },
+        {
+          "info": { "name": "Create a booking.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/scheduler/bookings",
+            "body": { "type": "json", "data": "{\n  \"session_type_id\": \"\",\n  \"start_time\": \"2026-08-01T15:00:00Z\"\n}" }
+          },
+          "docs": "Creates a booking against a session type's availability."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": { "name": "List webhook subscriptions.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.honeybook.com/v1/webhooks" },
+          "docs": "Not a confirmed HoneyBook capability - modeled to mirror the five Zapier trigger events."
+        },
+        {
+          "info": { "name": "Subscribe to an event.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/webhooks",
+            "body": { "type": "json", "data": "{\n  \"event\": \"payment.paid\",\n  \"target_url\": \"https://example.com/hooks/honeybook\"\n}" }
+          },
+          "docs": "Subscribes to an event."
+        },
+        {
+          "info": { "name": "Delete a webhook subscription.", "type": "http" },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.honeybook.com/v1/webhooks/:id",
+            "params": [
+              { "name": "id", "value": "", "type": "path", "description": "The ID of the webhook subscription." }
+            ]
+          },
+          "docs": "Deletes a webhook subscription."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

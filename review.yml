@@ -1,0 +1,108 @@
+aid: honeybook
+name: HoneyBook
+review:
+  question: Does HoneyBook expose a documented public WebSocket API?
+  answer: false
+  date: '2026-07-04'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was authored. HoneyBook has no documented public
+    API of any protocol - REST, WebSocket, or SSE. Its only externally
+    visible event surface is a set of polling-based Zapier triggers (New
+    Client, New Inquiry, Project Booked, Payment Received, Project Stage
+    Changed), which Zapier itself polls or receives via an internal
+    HoneyBook-to-Zapier mechanism that is not documented for third parties.
+    There is no public server-push transport of any kind to model.
+findings:
+  summary: |
+    HoneyBook does not publish a documented public WebSocket API - and, more
+    fundamentally, it does not publish a documented public API of any kind.
+    There is no developers.honeybook.com (the domain does not resolve) and
+    no self-serve API reference, OAuth client registration flow, or field
+    dictionary published anywhere on honeybook.com or help.honeybook.com.
+    Third-party connectivity is limited to a handful of native integrations
+    (QuickBooks Online, Zoom, Calendly, Flodesk, Canva, Meta Leads, Slack,
+    Asana, monday.com) and, most broadly, Zapier - accessed by pasting an
+    API key found under Company Settings > Integrations, not by registering
+    a developer app. HoneyBook community members have publicly requested
+    direct API access since at least January 2024; a HoneyBook community
+    moderator responded by directing requesters to a feature-idea board
+    rather than a roadmap or timeline, and some users cited the lack of an
+    API as a factor in subscription renewal decisions as recently as April
+    2026. An internal API host, api.honeybook.com, is live (resolves via
+    Cloudflare; returns HTTP 301/404 on unauthenticated root/version
+    requests) and clearly backs HoneyBook's own apps and native connectors,
+    but it is not documented for outside developers. No WebSocket (ws:// or
+    wss://) endpoint is documented or implied anywhere in this ecosystem.
+  gatingStatus: |
+    Gated/none. There is no self-serve signup, no published reference, and
+    no stated partner-API program page (unlike, say, a vendor that at least
+    markets a gated developer portal). Access beyond Zapier and the named
+    native integrations appears to require an unpublished, ad hoc business
+    arrangement with HoneyBook, if it exists at all.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://api.honeybook.com/v1
+      documented: false
+      note: Internal API host confirmed live (DNS resolves via Cloudflare; HTTP 301 on root, 404 on /v1/), and third-party integration guides (Rollout) describe an OAuth2-protected REST API at this base path, but HoneyBook itself publishes no reference. Base path and all endpoint shapes in this repo are modeled, not confirmed.
+    - protocol: Webhook (indirect, via Zapier)
+      scheme: https
+      documented: false
+      note: HoneyBook's only outward event surface is five Zapier trigger events (New Client, New Inquiry, Project Booked, Payment Received, Project Stage Changed). No direct outbound webhook subscription endpoint, signing secret, or delivery contract is published for third parties to call directly.
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented or implied anywhere on honeybook.com, help.honeybook.com, or in any third-party integration guide reviewed.
+  endpointsConfirmedRest: []
+  endpointsModeled: true
+  endpointsModeledNote: |
+    No HoneyBook REST endpoint is confirmed against a live, HoneyBook-published
+    reference. Every path in openapi/honeybook-openapi.yml is modeled from (a)
+    HoneyBook's own product feature set (clients, projects, contracts,
+    proposals, invoices, payments, scheduler), (b) the five event names
+    exposed through HoneyBook's Zapier integration, and (c) generic REST
+    convention - not from a live or historical HoneyBook API reference
+    document. Third-party integration guides (Rollout) cite a base path of
+    https://api.honeybook.com/v1/ and OAuth2 authentication, but are
+    internally inconsistent about the exact token endpoint and grant type
+    across their own pages, and are not independently verifiable; they are
+    cited as directional evidence only, not as a source of truth.
+sources:
+  - url: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+    type: Documentation
+    note: HoneyBook's help center integrations hub. Lists native connectors (Flodesk, Acuity, Meta Leads, Zapier, Asana, monday.com, Slack, Calendly, Pic-Time, Prismm, Zoom, Canva). No API or developer program section.
+  - url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
+    type: Documentation
+    note: Describes connecting via a Zapier-specific API key from Company Settings > Integrations, and lists the five available trigger events.
+  - url: https://community.honeybook.com/honeybook-product-talk-7/does-honeybook-have-an-api-for-integrations-918
+    type: Community
+    note: Community thread confirming no public API; a HoneyBook moderator points to the feature-idea board rather than a roadmap.
+  - url: https://rollout.com/integration-guides/honey-book/api-essentials
+    type: ThirdPartyGuide
+    note: Independent integration-guide vendor describing a hypothetical HoneyBook API (OAuth2, api.honeybook.com/v1, /user and /webhook examples, 429 rate-limit handling). Not an official HoneyBook source; cited as directional evidence only.
+  - url: https://rollout.com/integration-guides/honey-book/reading-and-writing-data-using-the-honeybook-api
+    type: ThirdPartyGuide
+    note: Same vendor, different page; cites api.honeybook.com/oauth/token and example /company, /contacts, /projects, /invoices operations. Inconsistent with the api-essentials page on the exact token endpoint, underscoring that neither is an authoritative reference.
+  - url: https://www.honeybook.com/pricing
+    type: Documentation
+    note: Official pricing page - Starter/Essentials/Premium tiers and card (2.7%+10c) / ACH (1.5%) payment processing fees. No mention of API access at any tier.
+  - url: https://github.com/honeybook
+    type: SourceCode
+    note: HoneyBook's public GitHub organization (55 repos) - internal tooling, React Native components, and forks; no public API SDK or client library.
+sourceVerification:
+  - check: DNS resolution of developers.honeybook.com
+    result: Does not resolve (no public developer portal domain exists).
+  - check: DNS resolution and HTTP probe of api.honeybook.com
+    result: Resolves via Cloudflare; HTTPS root returns 301, /v1/ returns 404. Confirms a live internal API host with no public documentation surfaced at those paths.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket protocol surface exists, and no HoneyBook API of any kind
+    is publicly documented, so no AsyncAPI document was created. The apis.yml
+    entry is built as an honest, clearly-labeled model of HoneyBook's logical
+    resource surface (clients, projects, contracts, proposals, invoices and
+    payments, scheduler, and a webhook-shaped event surface mirroring its
+    Zapier triggers) rather than as a confirmed API reference.

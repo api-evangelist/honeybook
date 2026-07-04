@@ -1,0 +1,883 @@
+openapi: 3.0.3
+info:
+  title: HoneyBook API (Modeled)
+  description: >-
+    HoneyBook does not publish a self-serve public developer API or a public
+    API reference. This document models the logical resource surface implied
+    by HoneyBook's product (clients/leads, projects, contracts, proposals,
+    invoices, payments, scheduler sessions) and by the trigger/action events
+    exposed through its Zapier integration (New Client, New Inquiry, Project
+    Booked, Payment Received, Project Stage Changed). An internal API host,
+    https://api.honeybook.com, is live behind Cloudflare and clearly backs
+    HoneyBook's own web/mobile apps and its native integrations, but
+    HoneyBook has never published endpoint documentation, a client
+    registration/OAuth flow, or a field dictionary for outside developers.
+    Third-party integration guides (e.g. Rollout) reference an OAuth 2.0 flow
+    against api.honeybook.com and a `/v1/` base path, but are inconsistent
+    with each other on the exact token endpoint and grant type, and are not
+    independently verifiable - treat every path, parameter, and schema below
+    as an honest, sourced-but-unverified model, not a confirmed reference.
+    Confirm directly with HoneyBook before attempting integration.
+  version: '1.0-modeled'
+  contact:
+    name: HoneyBook
+    url: https://www.honeybook.com
+externalDocs:
+  description: HoneyBook integrations and partnerships help center
+  url: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+servers:
+  - url: https://api.honeybook.com/v1
+    description: Modeled base path (unverified; not publicly documented by HoneyBook)
+security:
+  - oauth2: []
+tags:
+  - name: Clients
+    description: Clients and inquiries/leads captured through HoneyBook lead forms.
+  - name: Projects
+    description: The visual project pipeline - bookings and pipeline stage.
+  - name: Contracts
+    description: Contracts and e-signature agreements attached to a project.
+  - name: Proposals
+    description: Combined quote + contract + invoice documents sent to clients.
+  - name: Invoices
+    description: Invoices issued to clients within a project.
+  - name: Payments
+    description: Card and ACH payments made against invoices.
+  - name: Scheduler
+    description: Self-service session-type booking (Essentials/Premium plans).
+  - name: Webhooks
+    description: Modeled event subscription surface mirroring HoneyBook's Zapier triggers.
+paths:
+  /clients:
+    get:
+      operationId: listClients
+      tags: [Clients]
+      summary: List clients and inquiries
+      description: >-
+        Modeled from the "New Client" and "New Inquiry" Zapier triggers.
+        Not a confirmed HoneyBook endpoint.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: status
+          in: query
+          description: Filter by lead status (e.g. inquiry, client).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A page of clients/inquiries.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createClient
+      tags: [Clients]
+      summary: Create a client or inquiry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '201':
+          description: The created client.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /clients/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      operationId: getClient
+      tags: [Clients]
+      summary: Retrieve a client
+      responses:
+        '200':
+          description: The requested client.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateClient
+      tags: [Clients]
+      summary: Update a client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '200':
+          description: The updated client.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [Projects]
+      summary: List projects
+      parameters:
+        - name: stage
+          in: query
+          description: Filter by pipeline stage.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A page of projects.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createProject
+      tags: [Projects]
+      summary: Create a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '201':
+          description: The created project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /projects/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      operationId: getProject
+      tags: [Projects]
+      summary: Retrieve a project
+      description: >-
+        Modeled from the "Project Booked" and "Project Stage Changed" Zapier
+        triggers.
+      responses:
+        '200':
+          description: The requested project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateProject
+      tags: [Projects]
+      summary: Update a project (e.g. change pipeline stage)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '200':
+          description: The updated project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /projects/{project_id}/contracts:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      operationId: listContracts
+      tags: [Contracts]
+      summary: List contracts for a project
+      responses:
+        '200':
+          description: A list of contracts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createContract
+      tags: [Contracts]
+      summary: Create a contract for a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractInput'
+      responses:
+        '201':
+          description: The created contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /contracts/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      operationId: getContract
+      tags: [Contracts]
+      summary: Retrieve a contract
+      responses:
+        '200':
+          description: The requested contract.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /projects/{project_id}/proposals:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      operationId: listProposals
+      tags: [Proposals]
+      summary: List proposals for a project
+      responses:
+        '200':
+          description: A list of proposals.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Proposal'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createProposal
+      tags: [Proposals]
+      summary: Create a proposal (quote + contract + invoice) for a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalInput'
+      responses:
+        '201':
+          description: The created proposal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Proposal'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /proposals/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      operationId: getProposal
+      tags: [Proposals]
+      summary: Retrieve a proposal
+      responses:
+        '200':
+          description: The requested proposal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Proposal'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /projects/{project_id}/invoices:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      operationId: listInvoices
+      tags: [Invoices]
+      summary: List invoices for a project
+      responses:
+        '200':
+          description: A list of invoices.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createInvoice
+      tags: [Invoices]
+      summary: Create an invoice for a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceInput'
+      responses:
+        '201':
+          description: The created invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /invoices/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      operationId: getInvoice
+      tags: [Invoices]
+      summary: Retrieve an invoice
+      responses:
+        '200':
+          description: The requested invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /payments:
+    get:
+      operationId: listPayments
+      tags: [Payments]
+      summary: List payments
+      description: >-
+        Modeled from the "Payment Received" Zapier trigger, which fires on
+        any successfully paid client payment, manual or automatic.
+      parameters:
+        - name: invoice_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of payments.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /payments/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      operationId: getPayment
+      tags: [Payments]
+      summary: Retrieve a payment
+      responses:
+        '200':
+          description: The requested payment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /scheduler/session-types:
+    get:
+      operationId: listSessionTypes
+      tags: [Scheduler]
+      summary: List bookable session types
+      description: >-
+        Scheduler is available on Essentials and Premium plans (unlimited
+        session types); Starter is capped at one live session type.
+      responses:
+        '200':
+          description: A list of session types.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SessionType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /scheduler/bookings:
+    get:
+      operationId: listBookings
+      tags: [Scheduler]
+      summary: List scheduled bookings
+      responses:
+        '200':
+          description: A list of bookings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createBooking
+      tags: [Scheduler]
+      summary: Create a booking against a session type's availability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingInput'
+      responses:
+        '201':
+          description: The created booking.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /webhooks:
+    get:
+      operationId: listWebhooks
+      tags: [Webhooks]
+      summary: List webhook subscriptions
+      description: >-
+        Not a confirmed HoneyBook capability - modeled for completeness to
+        mirror the five events HoneyBook exposes only as Zapier triggers
+        (New Client, New Inquiry, Project Booked, Payment Received, Project
+        Stage Changed). No public webhook subscription endpoint is
+        documented by HoneyBook.
+      responses:
+        '200':
+          description: A list of webhook subscriptions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createWebhook
+      tags: [Webhooks]
+      summary: Subscribe to an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookInput'
+      responses:
+        '201':
+          description: The created webhook subscription.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /webhooks/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    delete:
+      operationId: deleteWebhook
+      tags: [Webhooks]
+      summary: Delete a webhook subscription
+      responses:
+        '200':
+          description: Deletion confirmation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: >-
+        Third-party integration guides reference OAuth 2.0 against
+        api.honeybook.com, but are inconsistent on the exact token endpoint
+        and grant type and are not independently verifiable. Modeled here as
+        an authorization-code flow with refresh tokens, the most common
+        pattern for a user-data platform of this kind; treat as unverified.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.honeybook.com/oauth/authorize
+          tokenUrl: https://api.honeybook.com/oauth/token
+          scopes:
+            clients.read: Read clients and inquiries.
+            clients.write: Create and update clients and inquiries.
+            projects.read: Read projects and pipeline stage.
+            projects.write: Create and update projects.
+            contracts.read: Read contracts.
+            contracts.write: Create contracts.
+            proposals.read: Read proposals.
+            proposals.write: Create proposals.
+            invoices.read: Read invoices.
+            invoices.write: Create invoices.
+            payments.read: Read payments.
+            scheduler.read: Read session types and bookings.
+            scheduler.write: Create bookings.
+            webhooks.write: Manage webhook subscriptions.
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the resource.
+      schema:
+        type: string
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier of the parent project.
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+    DeleteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        deleted:
+          type: boolean
+    ClientInput:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        status:
+          type: string
+          enum: [inquiry, client]
+    Client:
+      allOf:
+        - $ref: '#/components/schemas/ClientInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+    ProjectInput:
+      type: object
+      required:
+        - name
+        - client_id
+      properties:
+        name:
+          type: string
+        client_id:
+          type: string
+        stage:
+          type: string
+          description: Pipeline stage, e.g. Inquiry, Booked, Completed.
+    Project:
+      allOf:
+        - $ref: '#/components/schemas/ProjectInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            booked:
+              type: boolean
+            booked_at:
+              type: string
+              format: date-time
+    ContractInput:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    Contract:
+      allOf:
+        - $ref: '#/components/schemas/ContractInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            project_id:
+              type: string
+            status:
+              type: string
+              enum: [draft, sent, signed]
+            signed_at:
+              type: string
+              format: date-time
+    ProposalInput:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        line_items:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type: string
+              amount:
+                type: number
+    Proposal:
+      allOf:
+        - $ref: '#/components/schemas/ProposalInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            project_id:
+              type: string
+            status:
+              type: string
+              enum: [draft, sent, accepted]
+    InvoiceInput:
+      type: object
+      required:
+        - amount_due
+      properties:
+        amount_due:
+          type: number
+        due_date:
+          type: string
+          format: date
+        line_items:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type: string
+              amount:
+                type: number
+    Invoice:
+      allOf:
+        - $ref: '#/components/schemas/InvoiceInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            project_id:
+              type: string
+            status:
+              type: string
+              enum: [draft, sent, paid, overdue]
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        invoice_id:
+          type: string
+        amount:
+          type: number
+        method:
+          type: string
+          enum: [card, ach, manual]
+        status:
+          type: string
+          enum: [succeeded, pending, failed]
+        paid_at:
+          type: string
+          format: date-time
+    SessionType:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        duration_minutes:
+          type: integer
+    BookingInput:
+      type: object
+      required:
+        - session_type_id
+        - start_time
+      properties:
+        session_type_id:
+          type: string
+        client_id:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+    Booking:
+      allOf:
+        - $ref: '#/components/schemas/BookingInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+              enum: [scheduled, cancelled, completed]
+    WebhookInput:
+      type: object
+      required:
+        - event
+        - target_url
+      properties:
+        event:
+          type: string
+          enum:
+            - client.created
+            - inquiry.created
+            - project.booked
+            - payment.paid
+            - project.stage_changed
+        target_url:
+          type: string
+          format: uri
+    Webhook:
+      allOf:
+        - $ref: '#/components/schemas/WebhookInput'
+        - type: object
+          properties:
+            id:
+              type: string

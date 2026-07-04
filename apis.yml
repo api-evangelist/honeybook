@@ -1,0 +1,210 @@
+aid: honeybook
+url: https://raw.githubusercontent.com/api-evangelist/honeybook/refs/heads/main/apis.yml
+name: HoneyBook
+kind: company
+description: HoneyBook is an all-in-one clientflow management platform for
+  independent, service-based businesses - photographers, event planners,
+  designers, consultants, coaches, and similar creative entrepreneurs. It
+  combines CRM/lead capture, proposals, contracts and e-signature, invoicing
+  and payments, scheduling, automations, and client communication in one
+  product. HoneyBook does not publish a self-serve public developer API or a
+  developer portal; third-party connectivity is offered through a limited set
+  of native integrations (QuickBooks Online, Zoom, Calendly, Flodesk, Canva,
+  Meta Leads, Slack, Asana, monday.com) and, most broadly, through Zapier. An
+  internal API host (api.honeybook.com) is live and clearly powers the Zapier
+  integration and native connectors, but HoneyBook has never published a
+  self-serve technical reference, OAuth client registration flow, or endpoint
+  documentation for outside developers, and community requests for direct API
+  access date back to at least January 2024 with no roadmap commitment as of
+  this review.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- CRM
+- Clientflow
+- Proposals
+- Contracts
+- Invoicing
+- Payments
+- Scheduling
+- Creative Entrepreneurs
+- Small Business
+created: '2026-07-04'
+modified: '2026-07-04'
+specificationVersion: '0.19'
+apis:
+- aid: honeybook:honeybook-clients-api
+  name: HoneyBook Clients & Contacts API
+  tags:
+  - Clients
+  - Contacts
+  - CRM
+  - Leads
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  - url: collections/honeybook.postman_collection.json
+    type: APIClientCollection
+  - url: collections/honeybook.opencollection.json
+    type: APIClientCollection
+  description: Not a documented public API. Modeled from HoneyBook's Zapier
+    triggers ("New Client," "New Inquiry") and product feature set - create,
+    list, and retrieve clients and inquiries/leads captured through lead
+    forms. No public endpoint reference, request/response schema, or field
+    dictionary is published by HoneyBook; paths below are an honest,
+    unverified model of the CRUD surface implied by the Zapier integration
+    and generic REST convention, not confirmed against a live reference.
+- aid: honeybook:honeybook-projects-api
+  name: HoneyBook Projects API
+  tags:
+  - Projects
+  - Pipeline
+  - Stages
+  - Bookings
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  - url: collections/honeybook.postman_collection.json
+    type: APIClientCollection
+  description: Not a documented public API. Modeled from HoneyBook's visual
+    project pipeline and its Zapier triggers ("Project Booked," "Project
+    Stage Changed") - create and list projects, and read/react to pipeline
+    stage transitions (e.g. Inquiry, Booked, Completed). No public reference
+    is published; this is an honest, unverified model, not a confirmed
+    endpoint set.
+- aid: honeybook:honeybook-contracts-api
+  name: HoneyBook Contracts API
+  tags:
+  - Contracts
+  - E-Signature
+  - Agreements
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.honeybook.com/online-contracts
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://www.honeybook.com/online-contracts
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  description: Not a documented public API. HoneyBook's contract/e-signature
+    feature (part of what it markets as an "agreement" within a project) has
+    no published developer reference. Modeled here as list/create/retrieve
+    operations scoped to a project, mirroring how contracts are exposed in
+    the product UI; endpoint paths and field names are an honest,
+    unverified model rather than a confirmed API.
+- aid: honeybook:honeybook-proposals-api
+  name: HoneyBook Proposals API
+  tags:
+  - Proposals
+  - Quotes
+  - Sales
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.honeybook.com/online-proposals
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://www.honeybook.com/online-proposals
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  description: Not a documented public API. HoneyBook proposals combine a
+    quote, contract, and invoice into one client-facing document, tracked as
+    part of the "Project Booked" milestone in Zapier. Modeled as
+    list/create/retrieve operations scoped to a project; no public reference
+    is published so this is an honest, unverified model.
+- aid: honeybook:honeybook-invoices-payments-api
+  name: HoneyBook Invoices & Payments API
+  tags:
+  - Invoices
+  - Payments
+  - Billing
+  - ACH
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.honeybook.com/pricing
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://www.honeybook.com/pricing
+    type: Documentation
+  - url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  description: Not a documented public API. Modeled from HoneyBook's invoicing
+    and payments feature and its "Payment Received" Zapier trigger, which
+    fires on any successfully paid client payment (card or ACH, manual or
+    automatic). Includes list/create/retrieve for invoices and read access to
+    payment records. Card payments are processed starting at 2.7% + 10 cents
+    and ACH bank transfers at 1.5% per HoneyBook's published pricing page; no
+    endpoint reference is public, so paths and schemas here are an honest,
+    unverified model.
+- aid: honeybook:honeybook-scheduler-api
+  name: HoneyBook Scheduler API
+  tags:
+  - Scheduling
+  - Calendar
+  - Sessions
+  - Booking
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.honeybook.com/features/scheduling
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://www.honeybook.com/features/scheduling
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  description: Not a documented public API. HoneyBook Scheduler lets clients
+    self-book session types (consultations, shoots, calls) against a
+    provider's availability, and is gated to the Essentials and Premium
+    membership plans (unlimited sessions; Starter is capped at one live
+    session type). Modeled as session-type listing and booking
+    create/list/retrieve operations; no public reference exists, so this is
+    an honest, unverified model rather than a confirmed API.
+- aid: honeybook:honeybook-webhooks-api
+  name: HoneyBook Webhooks / Automation Events
+  tags:
+  - Webhooks
+  - Events
+  - Automation
+  - Zapier
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
+  baseURL: https://api.honeybook.com/v1
+  properties:
+  - url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
+    type: Documentation
+  - url: openapi/honeybook-openapi.yml
+    type: OpenAPI
+  description: Not a documented public webhook API. HoneyBook's event surface
+    is only exposed indirectly, as polling-based triggers inside its Zapier
+    integration (New Client, New Inquiry, Project Booked, Payment Received,
+    Project Stage Changed). No outbound webhook subscription endpoint, signing
+    secret, or delivery/retry contract is published for third parties.
+    Modeled here as a generic subscribe/list/delete webhook surface mirroring
+    those five Zapier trigger events, for completeness only - it is not a
+    confirmed or currently reachable HoneyBook API.
+common:
+- type: GitHubOrganization
+  url: https://github.com/honeybook
+- type: LinkedIn
+  url: https://www.linkedin.com/company/honeybook
+- type: Website
+  url: https://www.honeybook.com
+- type: Documentation
+  url: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+- type: Plans
+  url: plans/honeybook-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/honeybook-rate-limits.yml
+- type: FinOps
+  url: finops/honeybook-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

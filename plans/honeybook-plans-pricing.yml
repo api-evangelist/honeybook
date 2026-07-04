@@ -1,0 +1,206 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: HoneyBook
+providerId: honeybook
+created: '2026-07-04'
+modified: '2026-07-04'
+reconciled: false
+tags:
+- CRM
+- Clientflow
+- Small Business
+- Plans
+description: >-
+  HoneyBook sells three subscription membership tiers - Starter, Essentials,
+  and Premium - billed per company, plus a per-transaction payment processing
+  fee on top. There is no API-specific plan or tier: HoneyBook has no public
+  developer API, so no plan grants API access. Pricing below is from
+  HoneyBook's public pricing page; annual billing is discounted versus
+  monthly.
+notes: >-
+  Feature limits (lead forms, scheduler session types, team seats) are
+  reconstructed from HoneyBook's public pricing and help center pages as of
+  the review date; verify current figures directly with HoneyBook before
+  relying on them, as SaaS pricing pages change frequently.
+sources:
+- https://www.honeybook.com/pricing
+- https://help.honeybook.com/en/articles/2418282-what-s-included-in-each-honeybook-membership-plan
+plans:
+- id: honeybook-starter
+  name: Starter
+  type: paid
+  description: >-
+    Entry tier for a solo service business. Unlimited clients, projects,
+    invoices, payments, proposals, contracts, calendar, templates, and client
+    portal, with basic reporting. No automations, no SMS reminders, no
+    scheduler beyond a single live session type, and HoneyBook's "Powered by
+    HoneyBook" branding remains on emails, forms, and the client portal.
+  entries:
+  - label: Monthly Subscription (billed annually)
+    name: starter_annual_monthly
+    type: flat
+    metric: subscription
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $29/month (billed annually)
+    userMultiplied: false
+  - label: Monthly Subscription (billed monthly)
+    name: starter_monthly
+    type: flat
+    metric: subscription
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $36/month (billed monthly)
+    userMultiplied: false
+  - label: Live Lead Forms
+    name: starter_lead_forms
+    type: usage
+    metric: forms
+    limit: 2
+    timeFrame: account
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: Clients and Projects
+  - name: Invoices and Payments
+  - name: Proposals and Contracts
+  - name: Calendar and Templates
+  - name: Client Portal
+  - name: Basic Reports
+  - name: HoneyBook AI
+- id: honeybook-essentials
+  name: Essentials
+  type: paid
+  description: >-
+    HoneyBook's "most popular" tier. Adds Scheduler, automations, the
+    QuickBooks Online integration, SMS reminders, removal of "Powered by
+    HoneyBook" branding, standard reports, and up to two team members.
+  entries:
+  - label: Monthly Subscription (billed annually)
+    name: essentials_annual_monthly
+    type: flat
+    metric: subscription
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $49/month (billed annually, regularly $59)
+    userMultiplied: false
+  - label: Monthly Subscription (billed monthly)
+    name: essentials_monthly
+    type: flat
+    metric: subscription
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $59/month (billed monthly)
+    userMultiplied: false
+  - label: Live Lead Forms
+    name: essentials_lead_forms
+    type: usage
+    metric: forms
+    limit: 10
+    timeFrame: account
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  - label: Team Members
+    name: essentials_team_members
+    type: usage
+    metric: seats
+    limit: 2
+    timeFrame: account
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: All Starter Features
+  - name: Scheduler (Unlimited Sessions)
+  - name: Automations
+  - name: QuickBooks Online Integration
+  - name: SMS Reminders
+  - name: Branding Removal
+  - name: Standard Reports
+- id: honeybook-premium
+  name: Premium
+  type: paid
+  description: >-
+    Top tier for larger or multi-brand operations. Unlimited team members,
+    priority support, an onboarding specialist for the first 90 days, support
+    for managing multiple companies/brands under one account, unlimited live
+    lead forms, and advanced reporting.
+  entries:
+  - label: Monthly Subscription (billed annually)
+    name: premium_annual_monthly
+    type: flat
+    metric: subscription
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $109/month (billed annually, regularly $129)
+    userMultiplied: false
+  - label: Monthly Subscription (billed monthly)
+    name: premium_monthly
+    type: flat
+    metric: subscription
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $129/month (billed monthly)
+    userMultiplied: false
+  elements:
+  - name: All Essentials Features
+  - name: Unlimited Team Members
+  - name: Unlimited Live Lead Forms
+  - name: Priority Support
+  - name: Onboarding Specialist (First 90 Days)
+  - name: Multiple Companies/Brands
+  - name: Advanced Reports
+- id: honeybook-payment-processing
+  name: Payment Processing (All Plans)
+  type: usage
+  description: >-
+    Per-transaction fee applied on top of the subscription, charged whenever
+    a client pays an invoice through HoneyBook. Premium subscribers processing
+    over $500,000/year in payment volume may qualify for discounted rates.
+  entries:
+  - label: Card Payment Fee
+    name: card_payment_fee
+    type: usage
+    metric: transaction
+    limit: -1
+    timeFrame: transaction
+    geo: global
+    unit: 1
+    price: starting at 2.7% + 10 cents per card transaction (Visa, Mastercard, Discover, Apple Pay, Google Pay)
+    userMultiplied: false
+  - label: ACH Bank Transfer Fee
+    name: ach_payment_fee
+    type: usage
+    metric: transaction
+    limit: -1
+    timeFrame: transaction
+    geo: global
+    unit: 1
+    price: 1.5% per ACH bank transfer
+    userMultiplied: false
+  elements:
+  - name: No Hidden Fees
+  - name: No International Fees
+  - name: No Premium Card Brand Fees
+  - name: Volume Discount Above $500K/Year (Premium)
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

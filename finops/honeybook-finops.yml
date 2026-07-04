@@ -1,0 +1,100 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: HoneyBook
+providerId: honeybook
+created: '2026-07-04'
+modified: '2026-07-04'
+reconciled: false
+tags:
+- CRM
+- Clientflow
+- Small Business
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of HoneyBook spend for a service-based small business. Cost has
+  two components - a flat monthly/annual subscription per company (Starter,
+  Essentials, or Premium) and a variable per-transaction payment-processing
+  fee (card or ACH) charged whenever a client pays an invoice through
+  HoneyBook. There is no API-related cost line because HoneyBook has no
+  public developer API or metered API product; all integration today is
+  either a native connector (QuickBooks Online, Zoom, Calendly, Flodesk,
+  Canva, Meta Leads, Slack, Asana, monday.com) included in a plan tier, or
+  routed through a separate Zapier subscription that the customer pays for
+  independently.
+notes: >-
+  Because HoneyBook has no public API, there are no per-call or per-token
+  usage meters to track the way there would be for an AI or infrastructure
+  API. The dominant cost lever for a HoneyBook customer is plan tier
+  selection plus payment-processing volume, not API consumption.
+sources:
+- https://www.honeybook.com/pricing
+- https://help.honeybook.com/en/articles/2418282-what-s-included-in-each-honeybook-membership-plan
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: HoneyBook
+serviceCategory: Business Applications - Clientflow / CRM
+billingModel:
+  pricingCategory: Fixed and Usage-Based
+  billingFrequency: Monthly or Annual
+  billingCurrency: USD
+  chargeCategories:
+  - Purchase
+  - Usage
+  - Adjustment
+focusColumns:
+  ServiceName: HoneyBook Membership
+  ServiceCategory: Business Applications
+  ProviderName: HoneyBook
+  PublisherName: HoneyBook
+  InvoiceIssuerName: HoneyBook
+  BillingCurrency: USD
+  ChargeCategory: Purchase
+  PricingCategory: Fixed
+meters:
+- name: subscription_fee
+  description: Flat monthly or annual membership fee for the Starter, Essentials, or Premium plan.
+  unit: month
+  aggregation: sum
+  dimensions:
+  - account
+  - plan
+- name: card_payment_volume
+  description: Client card payments processed through HoneyBook, billed starting at 2.7% + 10 cents per transaction.
+  unit: usd
+  aggregation: sum
+  dimensions:
+  - account
+  - project
+- name: ach_payment_volume
+  description: Client ACH bank-transfer payments processed through HoneyBook, billed at 1.5% per transaction.
+  unit: usd
+  aggregation: sum
+  dimensions:
+  - account
+  - project
+- name: seat_count
+  description: Team members added beyond what a plan tier includes by default (Essentials caps at 2; Premium is unlimited).
+  unit: seats
+  aggregation: max
+  dimensions:
+  - account
+principles:
+- name: Visibility
+  description: Track plan tier, seat count, and monthly payment-processing volume (card vs ACH mix) per account.
+- name: Allocation
+  description: For agencies or multi-brand operators on Premium, allocate subscription and processing costs per managed company/brand.
+- name: Optimization
+  description: Favor ACH over card where clients will accept it (1.5% vs 2.7%+10 cents); move to Premium's volume-discount threshold ($500K/year processed) only once payment volume justifies it; downgrade plan tier if automations/Scheduler/branding removal go unused.
+- name: Accountability
+  description: Assign a plan-tier and integrations owner per account; review monthly payment-processing statements against the published fee schedule.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

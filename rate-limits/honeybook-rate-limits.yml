@@ -1,0 +1,67 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: HoneyBook
+providerId: honeybook
+created: '2026-07-04'
+modified: '2026-07-04'
+reconciled: false
+tags:
+- CRM
+- Clientflow
+- Rate Limiting
+- Quotas
+description: >-
+  HoneyBook publishes no rate-limit documentation because it publishes no
+  public API reference at all. Third-party integration guides describing
+  hypothetical HoneyBook API usage mention a generic HTTP 429 "too many
+  requests" response and recommend exponential backoff, but do not cite a
+  specific numeric threshold (requests per minute/hour) and are not
+  independently verifiable against a live HoneyBook reference. The only
+  concretely documented "limits" in the HoneyBook ecosystem are product
+  feature caps enforced by membership plan (e.g. Starter capped at 2 live
+  lead forms and 1 scheduler session type; Essentials capped at 10 lead forms
+  and 2 team members) rather than API request-rate limits.
+notes: >-
+  Because there is no public API, there is nothing to reconcile against a
+  live account. If HoneyBook grants direct/partner API access on request,
+  ask HoneyBook directly for the current rate-limit policy before building
+  against it.
+sources:
+- https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+- https://rollout.com/integration-guides/honey-book/api-essentials
+- https://www.honeybook.com/pricing
+responseCodes:
+  throttled: 429
+limits:
+- name: Public API Request Rate
+  scope: account
+  metric: requests
+  limit: not published (no public API exists)
+  notes: HoneyBook has never published a self-serve API reference or a rate-limit policy.
+- name: Starter Live Lead Forms
+  scope: account
+  metric: forms
+  limit: 2
+  notes: Product feature cap, not an API rate limit.
+- name: Starter Scheduler Session Types
+  scope: account
+  metric: session_types
+  limit: 1
+  notes: Product feature cap, not an API rate limit.
+- name: Essentials Live Lead Forms
+  scope: account
+  metric: forms
+  limit: 10
+  notes: Product feature cap, not an API rate limit.
+- name: Essentials Team Members
+  scope: account
+  metric: seats
+  limit: 2
+  notes: Product feature cap, not an API rate limit.
+policies:
+- name: Backoff Strategy (Modeled)
+  description: Third-party integration guides suggest exponential backoff on HTTP 429 for any hypothetical HoneyBook API call, mirroring generic REST API best practice rather than a HoneyBook-published policy.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

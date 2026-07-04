@@ -1,0 +1,231 @@
+{
+  "info": {
+    "name": "HoneyBook API (Modeled)",
+    "description": "Not an official HoneyBook collection. HoneyBook has no documented public API. This collection models the logical resource surface implied by HoneyBook's product (clients, projects, contracts, proposals, invoices, payments, scheduler) and its Zapier trigger events, against a modeled, unverified base URL of https://api.honeybook.com/v1. Confirm directly with HoneyBook before use.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      { "key": "accessToken", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://api.honeybook.com/v1", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "List clients and inquiries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clients", "host": ["{{baseUrl}}"], "path": ["clients"] },
+            "description": "Modeled from the New Client / New Inquiry Zapier triggers. Not a confirmed endpoint."
+          }
+        },
+        {
+          "name": "Create a client or inquiry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Jane Client\",\n  \"email\": \"jane@example.com\",\n  \"status\": \"inquiry\"\n}" },
+            "url": { "raw": "{{baseUrl}}/clients", "host": ["{{baseUrl}}"], "path": ["clients"] }
+          }
+        },
+        {
+          "name": "Retrieve a client",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clients/:id", "host": ["{{baseUrl}}"], "path": ["clients", ":id"], "variable": [{ "key": "id", "value": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "List projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/projects", "host": ["{{baseUrl}}"], "path": ["projects"] }
+          }
+        },
+        {
+          "name": "Create a project",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Fall Wedding\",\n  \"client_id\": \"\"\n}" },
+            "url": { "raw": "{{baseUrl}}/projects", "host": ["{{baseUrl}}"], "path": ["projects"] }
+          }
+        },
+        {
+          "name": "Retrieve a project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/projects/:id", "host": ["{{baseUrl}}"], "path": ["projects", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Modeled from the Project Booked / Project Stage Changed Zapier triggers."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contracts",
+      "item": [
+        {
+          "name": "List contracts for a project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/projects/:project_id/contracts", "host": ["{{baseUrl}}"], "path": ["projects", ":project_id", "contracts"], "variable": [{ "key": "project_id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Create a contract",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Service Agreement\"\n}" },
+            "url": { "raw": "{{baseUrl}}/projects/:project_id/contracts", "host": ["{{baseUrl}}"], "path": ["projects", ":project_id", "contracts"], "variable": [{ "key": "project_id", "value": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proposals",
+      "item": [
+        {
+          "name": "List proposals for a project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/projects/:project_id/proposals", "host": ["{{baseUrl}}"], "path": ["projects", ":project_id", "proposals"], "variable": [{ "key": "project_id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Create a proposal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Wedding Package\",\n  \"line_items\": [{ \"description\": \"Photography\", \"amount\": 2500 }]\n}" },
+            "url": { "raw": "{{baseUrl}}/projects/:project_id/proposals", "host": ["{{baseUrl}}"], "path": ["projects", ":project_id", "proposals"], "variable": [{ "key": "project_id", "value": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invoices",
+      "item": [
+        {
+          "name": "List invoices for a project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/projects/:project_id/invoices", "host": ["{{baseUrl}}"], "path": ["projects", ":project_id", "invoices"], "variable": [{ "key": "project_id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Create an invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amount_due\": 1250.00,\n  \"due_date\": \"2026-08-01\"\n}" },
+            "url": { "raw": "{{baseUrl}}/projects/:project_id/invoices", "host": ["{{baseUrl}}"], "path": ["projects", ":project_id", "invoices"], "variable": [{ "key": "project_id", "value": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "List payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/payments", "host": ["{{baseUrl}}"], "path": ["payments"] },
+            "description": "Modeled from the Payment Received Zapier trigger."
+          }
+        },
+        {
+          "name": "Retrieve a payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/payments/:id", "host": ["{{baseUrl}}"], "path": ["payments", ":id"], "variable": [{ "key": "id", "value": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scheduler",
+      "item": [
+        {
+          "name": "List session types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/scheduler/session-types", "host": ["{{baseUrl}}"], "path": ["scheduler", "session-types"] },
+            "description": "Scheduler is available on Essentials and Premium plans."
+          }
+        },
+        {
+          "name": "List bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/scheduler/bookings", "host": ["{{baseUrl}}"], "path": ["scheduler", "bookings"] }
+          }
+        },
+        {
+          "name": "Create a booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"session_type_id\": \"\",\n  \"start_time\": \"2026-08-01T15:00:00Z\"\n}" },
+            "url": { "raw": "{{baseUrl}}/scheduler/bookings", "host": ["{{baseUrl}}"], "path": ["scheduler", "bookings"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "List webhook subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/webhooks", "host": ["{{baseUrl}}"], "path": ["webhooks"] },
+            "description": "Not a confirmed HoneyBook capability - modeled to mirror the five Zapier trigger events."
+          }
+        },
+        {
+          "name": "Subscribe to an event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"event\": \"payment.paid\",\n  \"target_url\": \"https://example.com/hooks/honeybook\"\n}" },
+            "url": { "raw": "{{baseUrl}}/webhooks", "host": ["{{baseUrl}}"], "path": ["webhooks"] }
+          }
+        },
+        {
+          "name": "Delete a webhook subscription",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/webhooks/:id", "host": ["{{baseUrl}}"], "path": ["webhooks", ":id"], "variable": [{ "key": "id", "value": "" }] }
+          }
+        }
+      ]
+    }
+  ]
+}
