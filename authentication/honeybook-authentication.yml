@@ -1,0 +1,22 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/honeybook-openapi.yml
+summary:
+  types:
+  - oauth2
+  oauth2_flows:
+  - authorizationCode
+schemes:
+- name: oauth2
+  type: oauth2
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://api.honeybook.com/oauth/authorize
+    tokenUrl: https://api.honeybook.com/oauth/token
+    scopes: 14
+  description: Third-party integration guides reference OAuth 2.0 against api.honeybook.com,
+    but are inconsistent on the exact token endpoint and grant type and are not independently
+    verifiable. Modeled here as an authorization-code flow with refresh tokens, the most common
+    pattern for a user-data platform of this kind; treat as unverified.
+  sources:
+  - openapi/honeybook-openapi.yml
