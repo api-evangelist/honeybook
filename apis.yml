@@ -191,6 +191,8 @@ apis:
     those five Zapier trigger events, for completeness only - it is not a
     confirmed or currently reachable HoneyBook API.
 common:
+- type: OAuthScopes
+  url: scopes/honeybook-scopes.yml
 - type: GitHubOrganization
   url: https://github.com/honeybook
 - type: LinkedIn
@@ -205,6 +207,8 @@ common:
   url: rate-limits/honeybook-rate-limits.yml
 - type: FinOps
   url: finops/honeybook-finops.yml
+- url: https://www.honeybook.com/blog
+  type: Blog
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

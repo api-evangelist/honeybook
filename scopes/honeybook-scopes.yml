@@ -1,0 +1,99 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/honeybook-openapi.yml
+schemes:
+- name: oauth2
+  source: openapi/honeybook-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://api.honeybook.com/oauth/authorize
+    tokenUrl: https://api.honeybook.com/oauth/token
+  description: Third-party integration guides reference OAuth 2.0 against api.honeybook.com,
+    but are inconsistent on the exact token endpoint and grant type and are not independently
+    verifiable. Modeled here as an authorization-code flow with refresh tokens, the most common
+    pattern for a user-data platform of this kind; treat as unverified.
+scopes:
+- scope: clients.read
+  description: Read clients and inquiries.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: clients.write
+  description: Create and update clients and inquiries.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: contracts.read
+  description: Read contracts.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: contracts.write
+  description: Create contracts.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: invoices.read
+  description: Read invoices.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: invoices.write
+  description: Create invoices.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: payments.read
+  description: Read payments.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: projects.read
+  description: Read projects and pipeline stage.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: projects.write
+  description: Create and update projects.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: proposals.read
+  description: Read proposals.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: proposals.write
+  description: Create proposals.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: scheduler.read
+  description: Read session types and bookings.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: scheduler.write
+  description: Create bookings.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
+- scope: webhooks.write
+  description: Manage webhook subscriptions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/honeybook-openapi.yml
