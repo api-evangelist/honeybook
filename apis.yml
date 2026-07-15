@@ -191,6 +191,8 @@ apis:
     those five Zapier trigger events, for completeness only - it is not a
     confirmed or currently reachable HoneyBook API.
 common:
+- type: AgenticAccess
+  url: agentic-access/honeybook-agentic-access.yml
 - type: DomainSecurity
   url: security/honeybook-domain-security.yml
 - type: Authentication
