@@ -1,0 +1,28 @@
+{
+  "provider": "honeybook",
+  "sources": [
+    "honeybook-clients-api-openapi.yml",
+    "honeybook-contracts-api-openapi.yml",
+    "honeybook-invoices-api-openapi.yml",
+    "honeybook-payments-api-openapi.yml",
+    "honeybook-projects-api-openapi.yml",
+    "honeybook-proposals-api-openapi.yml",
+    "honeybook-scheduler-api-openapi.yml",
+    "honeybook-webhooks-api-openapi.yml"
+  ],
+  "outputs": [
+    "honeybook-clients-api-openapi.yml",
+    "honeybook-contracts-api-openapi.yml",
+    "honeybook-invoices-api-openapi.yml",
+    "honeybook-payments-api-openapi.yml",
+    "honeybook-projects-api-openapi.yml",
+    "honeybook-proposals-api-openapi.yml",
+    "honeybook-scheduler-api-openapi.yml",
+    "honeybook-webhooks-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
