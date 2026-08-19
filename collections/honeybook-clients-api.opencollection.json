@@ -1,0 +1,111 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "HoneyBook API (Modeled) Clients API",
+    "version": "1.0-modeled"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://api.honeybook.com/oauth/authorize",
+      "accessTokenUrl": "https://api.honeybook.com/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Clients",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List clients and inquiries",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/clients",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter by lead status (e.g. inquiry, client)."
+              }
+            ]
+          },
+          "docs": "Modeled from the \"New Client\" and \"New Inquiry\" Zapier triggers. Not a confirmed HoneyBook endpoint."
+        },
+        {
+          "info": {
+            "name": "Create a client or inquiry",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/clients",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a client or inquiry"
+        },
+        {
+          "info": {
+            "name": "Retrieve a client",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/clients/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the resource."
+              }
+            ]
+          },
+          "docs": "Retrieve a client"
+        },
+        {
+          "info": {
+            "name": "Update a client",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.honeybook.com/v1/clients/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the resource."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a client"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

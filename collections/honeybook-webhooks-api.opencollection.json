@@ -1,0 +1,75 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "HoneyBook API (Modeled) Clients Webhooks API",
+    "version": "1.0-modeled"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://api.honeybook.com/oauth/authorize",
+      "accessTokenUrl": "https://api.honeybook.com/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List webhook subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.honeybook.com/v1/webhooks"
+          },
+          "docs": "Not a confirmed HoneyBook capability - modeled for completeness to mirror the five events HoneyBook exposes only as Zapier triggers (New Client, New Inquiry, Project Booked, Payment Received, Project Stage Changed). No public webhook subscription endpoint is documented by HoneyBook."
+        },
+        {
+          "info": {
+            "name": "Subscribe to an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.honeybook.com/v1/webhooks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Subscribe to an event"
+        },
+        {
+          "info": {
+            "name": "Delete a webhook subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.honeybook.com/v1/webhooks/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the resource."
+              }
+            ]
+          },
+          "docs": "Delete a webhook subscription"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
