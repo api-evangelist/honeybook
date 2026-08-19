@@ -43,7 +43,7 @@ tags:
 - Small Business
 created: '2026-07-04'
 modified: '2026-07-04'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: honeybook:honeybook-clients-api
   name: HoneyBook Clients API
