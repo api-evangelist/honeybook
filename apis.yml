@@ -147,6 +147,8 @@ apis:
   humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
   baseURL: https://api.honeybook.com/v1
   tags:
+  - Project
+  tags_raw:
   - Projects
   properties:
   - type: OpenAPI
@@ -219,6 +221,8 @@ apis:
   humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
   baseURL: https://api.honeybook.com/v1
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
