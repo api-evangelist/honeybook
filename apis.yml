@@ -17,6 +17,18 @@ description: HoneyBook is an all-in-one clientflow management platform for
   documentation for outside developers, and community requests for direct API
   access date back to at least January 2024 with no roadmap commitment as of
   this review.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: paid
   onboarding: self-serve
