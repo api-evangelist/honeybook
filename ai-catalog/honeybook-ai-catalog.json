@@ -1,0 +1,36 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "HoneyBook",
+    "documentationUrl": "https://developers.honeybook.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:honeybook.com:mcp:honeybook-mcp",
+      "displayName": "HoneyBook",
+      "type": "application/mcp-server-card+json",
+      "url": "https://mcp.api.honeybook.com/mcp/server-card",
+      "description": "Run your HoneyBook business — contacts, clients, projects, invoices and account settings.",
+      "capabilities": [
+        "contacts",
+        "clients",
+        "projects",
+        "invoices",
+        "account-settings"
+      ],
+      "representativeQueries": [
+        "Has this client signed the contract and paid the deposit yet?",
+        "Create a project for a new client and send them an invoice.",
+        "Which proposals in my pipeline are still unsigned this month?",
+        "Show me the invoices that are overdue across all my clients."
+      ],
+      "tags": [
+        "crm",
+        "client-management",
+        "invoicing",
+        "payments",
+        "small-business"
+      ]
+    }
+  ]
+}
