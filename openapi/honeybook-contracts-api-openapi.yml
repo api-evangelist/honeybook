@@ -83,41 +83,16 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      description: The unique identifier of the resource.
-      schema:
-        type: string
-    ProjectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier of the parent project.
-      schema:
-        type: string
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
+    ContractInput:
+      type: object
+      required:
+      - title
+      properties:
+        title:
+          type: string
+        content:
+          type: string
     Contract:
       allOf:
       - $ref: '#/components/schemas/ContractInput'
@@ -146,15 +121,40 @@ components:
               type: string
             message:
               type: string
-    ContractInput:
-      type: object
-      required:
-      - title
-      properties:
-        title:
-          type: string
-        content:
-          type: string
+  responses:
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the resource.
+      schema:
+        type: string
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier of the parent project.
+      schema:
+        type: string
   securitySchemes:
     oauth2:
       type: oauth2
