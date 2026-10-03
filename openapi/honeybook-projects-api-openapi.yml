@@ -107,12 +107,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     NotFound:
       description: The requested resource was not found.
       content:
@@ -125,28 +119,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      description: The unique identifier of the resource.
-      schema:
-        type: string
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    ProjectInput:
-      type: object
-      required:
-      - name
-      - client_id
-      properties:
-        name:
-          type: string
-        client_id:
-          type: string
-        stage:
-          type: string
-          description: Pipeline stage, e.g. Inquiry, Booked, Completed.
     Error:
       type: object
       properties:
@@ -169,6 +148,27 @@ components:
           booked_at:
             type: string
             format: date-time
+    ProjectInput:
+      type: object
+      required:
+      - name
+      - client_id
+      properties:
+        name:
+          type: string
+        client_id:
+          type: string
+        stage:
+          type: string
+          description: Pipeline stage, e.g. Inquiry, Booked, Completed.
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the resource.
+      schema:
+        type: string
   securitySchemes:
     oauth2:
       type: oauth2

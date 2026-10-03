@@ -79,20 +79,29 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
 components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    Booking:
-      allOf:
-      - $ref: '#/components/schemas/BookingInput'
-      - type: object
-        properties:
-          id:
-            type: string
-          status:
-            type: string
-            enum:
-            - scheduled
-            - cancelled
-            - completed
+    SessionType:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        duration_minutes:
+          type: integer
     Error:
       type: object
       properties:
@@ -103,15 +112,6 @@ components:
               type: string
             message:
               type: string
-    SessionType:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        duration_minutes:
-          type: integer
     BookingInput:
       type: object
       required:
@@ -125,19 +125,19 @@ components:
         start_time:
           type: string
           format: date-time
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    Booking:
+      allOf:
+      - $ref: '#/components/schemas/BookingInput'
+      - type: object
+        properties:
+          id:
+            type: string
+          status:
+            type: string
+            enum:
+            - scheduled
+            - cancelled
+            - completed
   securitySchemes:
     oauth2:
       type: oauth2

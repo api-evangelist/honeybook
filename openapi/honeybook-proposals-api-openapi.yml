@@ -84,12 +84,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     NotFound:
       description: The requested resource was not found.
       content:
@@ -102,22 +96,38 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier of the parent project.
+      schema:
+        type: string
+    Id:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the resource.
+      schema:
+        type: string
   schemas:
-    Proposal:
-      allOf:
-      - $ref: '#/components/schemas/ProposalInput'
-      - type: object
-        properties:
-          id:
-            type: string
-          project_id:
-            type: string
-          status:
-            type: string
-            enum:
-            - draft
-            - sent
-            - accepted
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
     ProposalInput:
       type: object
       required:
@@ -134,31 +144,21 @@ components:
                 type: string
               amount:
                 type: number
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            message:
-              type: string
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      description: The unique identifier of the resource.
-      schema:
-        type: string
-    ProjectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier of the parent project.
-      schema:
-        type: string
+    Proposal:
+      allOf:
+      - $ref: '#/components/schemas/ProposalInput'
+      - type: object
+        properties:
+          id:
+            type: string
+          project_id:
+            type: string
+          status:
+            type: string
+            enum:
+            - draft
+            - sent
+            - accepted
   securitySchemes:
     oauth2:
       type: oauth2
