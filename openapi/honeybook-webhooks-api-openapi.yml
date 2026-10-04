@@ -79,12 +79,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     Unauthorized:
       description: Missing or invalid access token.
       content:
@@ -93,6 +87,12 @@ components:
             $ref: '#/components/schemas/Error'
     ValidationError:
       description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
       content:
         application/json:
           schema:
@@ -108,13 +108,13 @@ components:
               type: string
             message:
               type: string
-    DeleteResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        deleted:
-          type: boolean
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookInput'
+      - type: object
+        properties:
+          id:
+            type: string
     WebhookInput:
       type: object
       required:
@@ -132,13 +132,13 @@ components:
         target_url:
           type: string
           format: uri
-    Webhook:
-      allOf:
-      - $ref: '#/components/schemas/WebhookInput'
-      - type: object
-        properties:
-          id:
-            type: string
+    DeleteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        deleted:
+          type: boolean
   parameters:
     Id:
       name: id

@@ -84,12 +84,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     Unauthorized:
       description: Missing or invalid access token.
       content:
@@ -102,32 +96,29 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-  parameters:
-    ProjectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier of the parent project.
-      schema:
-        type: string
-    Id:
-      name: id
-      in: path
-      required: true
-      description: The unique identifier of the resource.
-      schema:
-        type: string
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            message:
-              type: string
+    Invoice:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceInput'
+      - type: object
+        properties:
+          id:
+            type: string
+          project_id:
+            type: string
+          status:
+            type: string
+            enum:
+            - draft
+            - sent
+            - paid
+            - overdue
     InvoiceInput:
       type: object
       required:
@@ -147,22 +138,31 @@ components:
                 type: string
               amount:
                 type: number
-    Invoice:
-      allOf:
-      - $ref: '#/components/schemas/InvoiceInput'
-      - type: object
-        properties:
-          id:
-            type: string
-          project_id:
-            type: string
-          status:
-            type: string
-            enum:
-            - draft
-            - sent
-            - paid
-            - overdue
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the resource.
+      schema:
+        type: string
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier of the parent project.
+      schema:
+        type: string
   securitySchemes:
     oauth2:
       type: oauth2

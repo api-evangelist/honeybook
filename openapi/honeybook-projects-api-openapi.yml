@@ -107,12 +107,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     Unauthorized:
       description: Missing or invalid access token.
       content:
@@ -125,17 +119,21 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the resource.
+      schema:
+        type: string
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            message:
-              type: string
     Project:
       allOf:
       - $ref: '#/components/schemas/ProjectInput'
@@ -161,14 +159,16 @@ components:
         stage:
           type: string
           description: Pipeline stage, e.g. Inquiry, Booked, Completed.
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      description: The unique identifier of the resource.
-      schema:
-        type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
   securitySchemes:
     oauth2:
       type: oauth2
