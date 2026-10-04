@@ -254,6 +254,9 @@ apis:
   - type: Documentation
     url: https://www.honeybook.com/features/scheduling
 common:
+- type: CapabilityMap
+  url: capabilities/honeybook-capability-edges.yml
+  name: HoneyBook Business Capability Map
 - type: AgenticAccess
   url: agentic-access/honeybook-agentic-access.yml
 - type: DomainSecurity
