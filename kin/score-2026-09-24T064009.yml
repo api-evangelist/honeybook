@@ -1,31 +1,30 @@
-# Kin Score artifact — honeybook — 2026-08-27T103455
+# Kin Score artifact — honeybook — 2026-09-24T064009
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: honeybook
-  schema_version: 0.15.1
-  scored_at: '2026-08-27'
-  run_ts: 2026-08-27T103455
-  composite: 34.1
+  schema_version: 0.22.0
+  scored_at: '2026-09-24'
+  run_ts: 2026-09-24T064009
+  composite: 31.6
   band: thin
   facets:
-    discoverability: 74.1
-    contract_quality: 37.2
-    governance: 0.0
+    discoverability: 68.5
+    contract_quality: 32.3
+    contract_governance: 0.0
     operational_transparency: 34.2
     developer_ergonomics: 23.8
-    commercial_clarity: 39.5
-    contract_governance: 0.0
     access_clarity: 39.5
   agent_readiness:
-    score: 24.8
-    band: agent-aware
+    score: 44.6
+    band: agent-ready
+    band_gated_from: agent-native
     dimensions:
       spec_presence: true
       agentic_access: derived
       reversibility_documented: false
-      mcp_server: false
-      auth_clarity: negotiable
+      mcp_server: verified
+      auth_clarity: served
       idempotency: false
       error_semantics: false
       openapi_examples: false
@@ -36,9 +35,9 @@ kin_score:
       consent_identity: false
       agent_card: false
       dry_run_mode: false
-      delegated_identity: documented
-      protected_resource_metadata: false
-      dynamic_client_registration: false
+      delegated_identity: served
+      protected_resource_metadata: verified
+      dynamic_client_registration: true
       agentic_commerce: false
   regulatory:
     applies: true
@@ -47,9 +46,10 @@ kin_score:
     score: 34.4
     matched_via: tags
   provenance:
+    mcp: first-party
     agentic_access: derived
     contracts:
       total: 8
-      derived: 3
-      coverage: 37.5
+      derived: 0
+      coverage: 0.0
       callable: 100.0
