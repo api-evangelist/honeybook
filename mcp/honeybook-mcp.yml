@@ -19,3 +19,45 @@ tools_note: No tool list captured. This manifest records a PROBED, reachable end
   not perform. Run signals/audit_mcp_authorship.py --probe to enumerate tools and settle platform-vs-provider
   authorship. Do NOT derive a tool list from the OpenAPI and store it here -- that is a candidate manifest,
   and it belongs under an X-MCPServerCandidate pointer.
+rfc9728:
+  endpoint: https://mcp.api.honeybook.com/mcp
+  metadata_url: https://mcp.api.honeybook.com/.well-known/oauth-protected-resource
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://mcp.api.honeybook.com
+    authorization_servers:
+    - https://oauth.honeybook.com
+    scopes_supported:
+    - offline_access
+    - honeybook.api
+    - projects.read
+    - projects.write
+    - workspaces.read
+    - workspaces.write
+    - contacts.read
+    - contacts.write
+    - client_organizations.read
+    - client_organizations.write
+    - smart_files.read
+    - smart_files.write
+    - lead_forms.read
+    - lead_forms.write
+    - notes.read
+    - notes.write
+    - meeting_transcripts.read
+    - tasks.read
+    - tasks.write
+    - communications.read
+    - communications.write
+    - reports.read
+    - account.read
+    - account.write
+    - pro_authorizations.read
+    - pro_authorizations.write
+    - bookkeeper_authorizations.read
+    - bookkeeper_authorizations.write
+    bearer_methods_supported:
+    - header
