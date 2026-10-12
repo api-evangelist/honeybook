@@ -1,0 +1,429 @@
+generated: '2026-10-12'
+method: searched
+source:
+- https://zapier.com/apps/honeybook/integrations
+checked:
+- https://composio.dev/toolkits/honeybook
+- https://monid.ai/tools/honeybook
+- https://n8n.io/integrations/honeybook/
+- https://zapier.com/apps/honeybook/integrations
+summary: null
+marketplace_apps:
+- marketplace: zapier
+  channel: ipaas-listing
+  app: honeybook
+  url: https://zapier.com/apps/honeybook/integrations
+  external_url: https://www.honeybook.com/
+  partner_tier: PLATINUM
+  triggers:
+  - key: client_created
+    label: Client Created
+  - key: meeting_scheduled
+    label: Meeting Scheduled
+  - key: new_inquiry_created
+    label: New Inquiry
+  - key: payment_paid
+    label: New Payment Paid
+  - key: project_booked
+    label: New Project Booked
+  - key: project_stage_changed
+    label: Project Stage Changed
+  actions:
+  - key: create_project
+    label: Create Project
+  - key: new_contact
+    label: Create Client
+  searches: []
+edges:
+- partner_name: Google Drive
+  partner: google-drive
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-drive
+  direction: third-party
+  category: File Management & Storage
+  partner_url: https://www.google.com/drive/
+- partner_name: Zoho Projects
+  partner: zoho-projects
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/zoho-projects
+  direction: third-party
+  category: Project Management
+  partner_url: https://go.zoho.com/Fa8
+- partner_name: ClickUp
+  partner: clickup
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/clickup
+  direction: third-party
+  category: Project Management
+  partner_url: https://clickup.com/zapier
+- partner_name: Google Sheets
+  partner: google-sheets
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-sheets
+  direction: third-party
+  category: Google
+  partner_url: http://sheets.google.com/
+- partner_name: Mailchimp
+  partner: mailchimp
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/mailchimp
+  direction: third-party
+  category: Marketing Automation
+  partner_url: https://mailchimp.com/
+- partner_name: Flodesk
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/flodesk
+  direction: third-party
+  category: Email Newsletters
+  partner_url: https://flodesk.com/
+- partner_name: Asana
+  partner: asana
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/asana
+  direction: third-party
+  category: Project Management
+  partner_url: http://asana.com/
+- partner_name: Quo
+  partner: quo
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/quo
+  direction: third-party
+  category: Phone & SMS
+  partner_url: https://quo.com/?utm_source=partnership&utm_medium=partner&utm_campaign=zapier
+- partner_name: Gmail
+  partner: gmail
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/gmail
+  direction: third-party
+  category: Email
+  partner_url: https://mail.google.com/
+- partner_name: Notion
+  partner: notion
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/notion
+  direction: third-party
+  category: Task Management
+  partner_url: https://www.notion.so/
+- partner_name: monday.com
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/monday
+  direction: third-party
+  category: Project Management
+  partner_url: https://monday.com/
+- partner_name: Airtable
+  partner: airtable
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/airtable
+  direction: third-party
+  category: Databases
+  partner_url: https://airtable.com/
+- partner_name: Slack
+  partner: slack
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/slack
+  direction: third-party
+  category: Team Chat
+  partner_url: https://slack.com/
+- partner_name: Squarespace Forms
+  partner: squarespace
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/squarespace-forms
+  direction: third-party
+  category: Forms & Surveys
+  partner_url: https://www.squarespace.com/
+- partner_name: Trello
+  partner: trello
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/trello
+  direction: third-party
+  category: Project Management
+  partner_url: https://trello.com/
+- partner_name: Google Calendar
+  partner: google-calendar
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-calendar
+  direction: third-party
+  category: Calendar
+  partner_url: https://calendar.google.com/
+- partner_name: Microsoft Outlook
+  partner: microsoft-outlook
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/microsoft-outlook
+  direction: third-party
+  category: Calendar
+  partner_url: https://outlook.live.com/
+- partner_name: LeadConnector
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/leadconnector
+  direction: third-party
+  category: Marketing Automation
+  partner_url: https://www.leadconnectorhq.com/
+- partner_name: Google Ads
+  partner: google-ads
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-ads
+  direction: third-party
+  category: Ads & Conversion
+  partner_url: https://ads.google.com/
+- partner_name: HubSpot
+  partner: hubspot
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/hubspot
+  direction: third-party
+  category: Marketing Automation
+  partner_url: http://www.hubspot.com/
+- partner_name: Wave
+  partner: wave-financial
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/wave
+  direction: third-party
+  category: Accounting
+  partner_url: https://www.waveapps.com/
+- partner_name: Square
+  partner: square
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/square
+  direction: third-party
+  category: eCommerce
+  partner_url: https://squareup.com/t/cmtp_performance/pr_developers/d_partnerships/p_zapier/?route=
+- partner_name: Wix
+  partner: wix
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/wix
+  direction: third-party
+  category: Website Builders
+  partner_url: https://www.wix.com/
+- partner_name: Facebook Lead Ads
+  partner: facebook-lead-ads
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/facebook-lead-ads
+  direction: third-party
+  category: Ads & Conversion
+  partner_url: https://www.facebook.com/business/ads/lead-ads
+- partner_name: MailerLite
+  partner: mailerlite
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/mailerlite
+  direction: third-party
+  category: Marketing Automation
+  partner_url: https://www.mailerlite.com/?utm_source=zapier&utm_medium=partner&utm_campaign=profile&utm_term=learn_more&utm_content=integrations
+- partner_name: ActiveCampaign
+  partner: activecampaign
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/activecampaign
+  direction: third-party
+  category: Marketing Automation
+  partner_url: https://www.activecampaign.com/?utm_source=unpaid_syndication_website&utm_medium=referral&utm_campaign=zapier_listing
+- partner_name: Todoist
+  partner: todoist
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/todoist
+  direction: third-party
+  category: Task Management
+  partner_url: https://todoist.com/
+- partner_name: FreshBooks
+  partner: freshbooks
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/freshbooks
+  direction: third-party
+  category: Accounting
+  partner_url: https://www.freshbooks.com/?ref=10350
+- partner_name: Google Docs
+  partner: google-docs
+  partner_match: name-exact
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-docs
+  direction: third-party
+  category: Documents
+  partner_url: http://google.com/
+- partner_name: Jotform
+  partner: jotform
+  partner_match: domain
+  partner_candidate: null
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/jotform
+  direction: third-party
+  category: Forms & Surveys
+  partner_url: http://www.jotform.com/
+templates:
+- title: Create new Google Drive folders when new HoneyBook projects are booked
+  url: https://zapier.com/apps/google-drive/integrations/honeybook/19937/create-new-google-drive-folders-when-new-honeybook-projects-are-booked
+  apps:
+  - honeybook
+  - google-drive
+- title: Add new HoneyBook inquiries to a Mailchimp list
+  url: https://zapier.com/apps/honeybook/integrations/mailchimp/18200/add-new-honeybook-inquiries-to-a-mailchimp-list
+  apps:
+  - honeybook
+  - mailchimp
+- title: Keep track of your HoneyBook payments in Google Sheets
+  url: https://zapier.com/apps/google-sheets/integrations/honeybook/19943/keep-track-of-your-honeybook-payments-in-google-sheets
+  apps:
+  - honeybook
+  - google-sheets
+- title: Create new Trello cards when HoneyBook project are booked
+  url: https://zapier.com/apps/honeybook/integrations/trello/19961/create-new-trello-cards-when-honeybook-project-are-booked
+  apps:
+  - honeybook
+  - trello
+- title: Create Flodesk subscribers from new HoneyBook inquiries
+  url: https://zapier.com/apps/flodesk/integrations/honeybook/573834/create-flodesk-subscribers-from-new-honeybook-inquiries
+  apps:
+  - honeybook
+  - flodesk
+- title: Create new Asana tasks when HoneyBook projects are moved to a new stage
+  url: https://zapier.com/apps/asana/integrations/honeybook/19964/create-new-asana-tasks-when-honeybook-projects-are-moved-to-a-new-stage
+  apps:
+  - honeybook
+  - asana
+- title: Create ClickUp tasks for new HoneyBook projects
+  url: https://zapier.com/apps/clickup/integrations/honeybook/1552982/create-clickup-tasks-for-new-honeybook-projects
+  apps:
+  - honeybook
+  - clickup
+- title: Send out of office emails via Gmail to new HoneyBook inquiries
+  url: https://zapier.com/apps/gmail/integrations/honeybook/18341/send-out-of-office-emails-via-gmail-to-new-honeybook-inquiries
+  apps:
+  - honeybook
+  - gmail
+- title: Record sales in Wave when new payments are completed in HoneyBook
+  url: https://zapier.com/apps/honeybook/integrations/wave/349170/record-sales-in-wave-when-new-payments-are-completed-in-honeybook
+  apps:
+  - honeybook
+  - wave
+- title: Create Slack channels when projects are booked on HoneyBook
+  url: https://zapier.com/apps/honeybook/integrations/slack/19963/create-slack-channels-when-projects-are-booked-on-honeybook
+  apps:
+  - honeybook
+  - slack
+- title: Add new HoneyBook inquiries to Google Ads customer list as contacts
+  url: https://zapier.com/apps/google-ads/integrations/honeybook/1626300/add-new-honeybook-inquiries-to-google-ads-customer-list-as-contacts
+  apps:
+  - honeybook
+  - google-ads
+- title: Create Google Sheet rows for new inquiries in HoneyBook
+  url: https://zapier.com/apps/google-sheets/integrations/honeybook/189367/create-google-sheet-rows-for-new-inquiries-in-honeybook
+  apps:
+  - honeybook
+  - google-sheets
+template_total: 988
