@@ -3,6 +3,7 @@ method: searched
 source:
 - https://zapier.com/apps/honeybook/integrations
 checked:
+- freshbooks/integrations/freshbooks-integration-edges.yml
 - https://composio.dev/toolkits/honeybook
 - https://monid.ai/tools/honeybook
 - https://n8n.io/integrations/honeybook/
@@ -365,6 +366,23 @@ edges:
   direction: third-party
   category: Forms & Surveys
   partner_url: http://www.jotform.com/
+- partner_name: FreshBooks (own)
+  partner: freshbooks
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://appstore.freshbooks.com/apps/honeybook
+  mirror_of: freshbooks/integrations/freshbooks-integration-edges.yml
+  apps:
+  - HoneyBook
+  listing_count: 1
+  detected: '2026-10-14'
+  detected_by: mirror-platform-listings.py
+  category: Manage Projects
 templates:
 - title: Create new Google Drive folders when new HoneyBook projects are booked
   url: https://zapier.com/apps/google-drive/integrations/honeybook/19937/create-new-google-drive-folders-when-new-honeybook-projects-are-booked

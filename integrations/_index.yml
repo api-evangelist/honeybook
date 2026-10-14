@@ -208,7 +208,6 @@
   arazzo: null
 - slug: honeybook-monday-com
   label: monday.com
-  partner: monday-com
   partner_name: monday.com
   category: Project Management
   type: marketplace
@@ -216,7 +215,7 @@
   channel: ipaas-usage
   evidence: https://zapier.com/apps/honeybook/integrations/monday
   source: edge
-  status: pending-generation
+  status: pending-partner-spec
   arazzo: null
 - slug: honeybook-airtable
   label: Airtable
@@ -396,4 +395,17 @@
   evidence: https://zapier.com/apps/honeybook/integrations/jotform
   source: edge
   status: pending-generation
+  arazzo: null
+- slug: honeybook-freshbooks-own
+  label: FreshBooks (own)
+  partner: freshbooks
+  partner_name: FreshBooks (own)
+  category: Manage Projects
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://appstore.freshbooks.com/apps/honeybook
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
   arazzo: null
