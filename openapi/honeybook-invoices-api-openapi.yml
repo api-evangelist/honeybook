@@ -83,42 +83,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    Invoice:
-      allOf:
-      - $ref: '#/components/schemas/InvoiceInput'
-      - type: object
-        properties:
-          id:
-            type: string
-          project_id:
-            type: string
-          status:
-            type: string
-            enum:
-            - draft
-            - sent
-            - paid
-            - overdue
     InvoiceInput:
       type: object
       required:
@@ -148,6 +113,22 @@ components:
               type: string
             message:
               type: string
+    Invoice:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceInput'
+      - type: object
+        properties:
+          id:
+            type: string
+          project_id:
+            type: string
+          status:
+            type: string
+            enum:
+            - draft
+            - sent
+            - paid
+            - overdue
   parameters:
     Id:
       name: id
@@ -163,6 +144,25 @@ components:
       description: The unique identifier of the parent project.
       schema:
         type: string
+  responses:
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     oauth2:
       type: oauth2
