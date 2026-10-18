@@ -434,3 +434,16 @@
     builder: unknown (not in the directory record)
   status: not-a-workflow
   arazzo: null
+- slug: honeybook-zoom-own
+  label: Zoom (own)
+  partner: zoom
+  partner_name: Zoom (own)
+  category: Zoom app
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  evidence: https://marketplace.zoom.us/apps/3L0a7Wp5T3W-mh8EsbNUPg
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
