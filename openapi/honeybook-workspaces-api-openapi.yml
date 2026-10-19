@@ -1,0 +1,1437 @@
+openapi: 3.2.0
+info:
+  title: HoneyBook Workspaces API
+  description: 'The HoneyBook API lets you read and write the data behind a HoneyBook account — contacts, projects, workspaces, smart files, tasks, notes, conversations and more.
+
+
+    It is a JSON HTTP API. Every request is authenticated with an OAuth 2.0 access token, every response is JSON, and every endpoint lives under a single versioned base path.
+
+
+    ### Base URL
+
+
+    ```
+
+    https://api.honeybook.com/api/v3
+
+    ```
+
+
+    The version is part of the path. A new major version gets its own path and its own documentation; endpoints in `v3` are not removed or changed in place.
+
+
+    ### Making a request
+
+
+    Send the access token as a bearer token:
+
+
+    ```bash
+
+    curl https://api.honeybook.com/api/v3/contacts \
+
+    -H "Authorization: Bearer "
+
+    ```
+
+
+    ### How this documentation is organized
+
+
+    **Guides** describe the conventions that apply across the whole API. Read Errors, Pagination and Filtering & Sorting once and they apply to every endpoint you touch.
+
+
+    **API Reference** documents every endpoint, grouped by the resource it belongs to.
+
+
+    ### Conventions worth knowing before you start
+
+
+    - **Identifiers are opaque strings.** An id is a 24-character hexadecimal string. Treat it as an opaque token: do not parse it, and do not assume any structure or ordering.
+
+    - **Timestamps are ISO 8601** in UTC, for example `2026-08-11T14:30:52Z`. Date-only fields are `YYYY-MM-DD`.
+
+    - **Money is an object**, not a bare number — an amount together with its currency. Never assume a currency.
+
+    - **Unknown query parameters are ignored, not rejected.** A misspelled filter name does not produce an error; it simply does not filter. Check your parameter names against the reference when a list returns more rows than you expected.
+
+    - **Absent is not the same as empty.** A field that was not requested and a field that is genuinely empty are distinguished — see Relation Includes.
+
+
+    The API is private. To get access, fill in the Request Access form.'
+  version: v3
+servers:
+- url: https://api.honeybook.com/api/v3
+  description: Production
+security:
+- oauth2: []
+tags:
+- name: Workspaces
+  description: Operations about Workspaces
+paths:
+  /workspaces:
+    get:
+      summary: List the caller company's workspaces
+      description: 'Company-scoped: every workspace owned by the caller''s company. The counts and existence reads (getWorkspaceCounts, hasAnyWorkspace) share this exact population, so getWorkspaceCounts.all == this list''s total_items.'
+      parameters:
+      - in: query
+        name: page
+        description: 1-indexed page number
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000
+          default: 1
+      - in: query
+        name: per_page
+        description: Page size (max 100)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: project_id
+        description: event_id =
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: status
+        description: workspace_status =
+        required: false
+        schema:
+          type: string
+          enum:
+          - lead
+          - lead_archived
+          - client
+          - client_archived
+          - lead_sent
+      - in: query
+        name: kind
+        description: workspace_type =
+        required: false
+        schema:
+          type: string
+          enum:
+          - general
+          - team
+          - design
+          - all_vendors
+          - timeline
+      - in: query
+        name: archived
+        description: is_archived =
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: created_after
+        description: created_at >=
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_before
+        description: created_at <=
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: sort
+        description: 'Comma-separated sort keys; ''-'' prefix = descending. Allowed: created_at, updated_at. Default: -created_at.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List the caller company's workspaces
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace_Page'
+      tags:
+      - Workspaces
+      operationId: listWorkspaces
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.read
+      - oauth2:
+        - workspaces.read_own
+  /workspaces/counts:
+    get:
+      summary: Workspace counts for the caller's company (all / active / inactive)
+      description: 'Company-scoped over the SAME population as listWorkspaces (every workspace the caller''s company owns), decomposed along the list''s `archived` filter: active = not archived, inactive = archived, all = active + inactive. So all == listWorkspaces total_items and inactive == listWorkspaces?archived=true.'
+      responses:
+        '200':
+          description: Workspace counts for the caller's company (all / active / inactive)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_WorkspaceCounts'
+      tags:
+      - Workspaces
+      operationId: getWorkspaceCounts
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.read
+  /workspaces/any:
+    get:
+      summary: Whether the caller's company has any workspace
+      description: 'Company-scoped existence over the SAME population as listWorkspaces: true iff the caller''s company owns at least one workspace (equivalently, getWorkspaceCounts.all > 0).'
+      responses:
+        '200':
+          description: Whether the caller's company has any workspace
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_WorkspaceExistence'
+      tags:
+      - Workspaces
+      operationId: hasAnyWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.read
+  /workspaces/{id}:
+    get:
+      summary: Get a workspace by id
+      description: Only a workspace member, or a moderator-or-greater of the workspace's company, may read it; anyone else gets a 404. A workspace that existed and was deleted answers 410 (HBWorkspaceDeletedError) rather than 404, so a client can tell "gone" from "never yours" and clean up its own copy.
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: include
+        description: 'Comma-separated relations to populate. Allowed: creator, pipeline_stage, automations, action_suggestions, scheduled_sessions. A relation not requested is null. Nested paths (a.b) are not supported.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - creator
+            - pipeline_stage
+            - automations
+            - action_suggestions
+            - scheduled_sessions
+      - in: query
+        name: max_action_suggestions
+        description: Max action_suggestions per row (1..25, default 3). Ordered by expires_at asc. Requires include=action_suggestions.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 25
+      - in: query
+        name: max_scheduled_sessions
+        description: Max scheduled_sessions per row (1..100, default 25). Ordered by date_time_start asc. Requires include=scheduled_sessions.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Get a workspace by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+      tags:
+      - Workspaces
+      operationId: getWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.read
+      - oauth2:
+        - workspaces.read_own
+    patch:
+      summary: Update a workspace (partial; renames the tab)
+      description: Only the workspace creator, an admin of the creator's company, or a member in that company may update; anyone else gets a 404.
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateWorkspace'
+        required: true
+      responses:
+        '200':
+          description: Update a workspace (partial; renames the tab)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+      tags:
+      - Workspaces
+      operationId: updateWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+    delete:
+      summary: Delete a workspace
+      description: Archives the workspace and its files/flows to the graveyard and destroys it (and the Project when its last workspace is removed). Only the creator/owner/admin of the owning company may delete, and only when every file/flow is deletable (else 400).
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Delete a workspace
+      tags:
+      - Workspaces
+      operationId: deleteWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+  /workspaces/{id}/deletable:
+    get:
+      summary: Whether a workspace can be deleted by the caller
+      description: 'Members only — matching deleteWorkspace itself, which is member-gated inside the manager. A non-member gets a 404 even if they are an admin. A false answer carries a `reason`: not_permitted (a client, a caller from another company, or a team member who is neither the creator nor an owner/admin) or has_undeletable_files (payments or a signed contract).'
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Whether a workspace can be deleted by the caller
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_WorkspaceDeletable'
+      tags:
+      - Workspaces
+      operationId: getWorkspaceDeletable
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.read
+      - oauth2:
+        - workspaces.read_own
+  /workspaces/{id}/members:
+    get:
+      summary: List a workspace's members
+      description: Only a workspace member, or a moderator-or-greater of the workspace's company, may read the member list; anyone else gets a 404.
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: page
+        description: 1-indexed page number
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000
+          default: 1
+      - in: query
+        name: per_page
+        description: Page size (max 100)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      - in: query
+        name: include
+        description: 'Comma-separated relations to populate. Allowed: user, contact. A relation not requested is null. Nested paths (a.b) are not supported.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - user
+            - contact
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List a workspace's members
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_WorkspaceMember_Page'
+      tags:
+      - Workspaces
+      operationId: listWorkspaceMembers
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.read
+      - oauth2:
+        - workspaces.read_own
+  /workspaces/{id}/members/{user_id}:
+    put:
+      summary: Add a member to a workspace (idempotent)
+      description: The caller must both participate in the workspace AND belong to the company that owns it; anyone else gets a 404. Returns the added membership row, the same shape listWorkspaceMembers returns, so a caller can read the contact it just gained without a second round trip.
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: user_id
+        description: User id to add — a team member of the caller's company, or anyone it holds a contact for and can see (a client, or a collaborator from another company)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addWorkspaceMember'
+        required: true
+      responses:
+        '200':
+          description: Add a member to a workspace (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_WorkspaceMember'
+      tags:
+      - Workspaces
+      operationId: addWorkspaceMember
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+    delete:
+      summary: Remove a member from a workspace
+      description: Only the workspace creator or a super-admin of the creator's company may remove a member; anyone else gets a 404. Neither the creator nor the caller themselves can be removed (400).
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: user_id
+        description: Member user id to remove
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Remove a member from a workspace
+      tags:
+      - Workspaces
+      operationId: removeWorkspaceMember
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+  /workspaces/{id}/tags/{tag_id}:
+    put:
+      summary: Tag a workspace (idempotent)
+      description: Members and super-admins of the creator's company only; anyone else gets a 404.
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tag_id
+        description: Tag id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Tag a workspace (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+      tags:
+      - Workspaces
+      operationId: addWorkspaceTag
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+    delete:
+      summary: Untag a workspace (idempotent)
+      description: Members and super-admins of the creator's company only; anyone else gets a 404.
+      parameters:
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tag_id
+        description: Tag id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Untag a workspace (idempotent)
+      tags:
+      - Workspaces
+      operationId: removeWorkspaceTag
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+  /workspaces/{id}/archive:
+    post:
+      summary: Archive a workspace for the caller and their team
+      description: Only a workspace member, or a super-admin of the creator's company, may archive; anyone else gets a 404.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/archiveWorkspace'
+        required: true
+      responses:
+        '200':
+          description: Archive a workspace for the caller and their team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+      tags:
+      - Workspaces
+      operationId: archiveWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+  /workspaces/{id}/unarchive:
+    post:
+      summary: Unarchive a workspace for the caller
+      description: Only a workspace member, or a super-admin of the creator's company, may unarchive; anyone else gets a 404.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Unarchive a workspace for the caller
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+      tags:
+      - Workspaces
+      operationId: unarchiveWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+  /workspaces/{id}/book:
+    post:
+      summary: Book a workspace (mark the project as booked)
+      description: Sets status to `client` and advances the pipeline stage to the company's paid stage (else signed, else the first projects-group stage), only when that is forward of the current one. A no-op on an already-booked workspace. Only the workspace creator, an admin of the creator's company, or a member in that company may book; anyone else gets a 404. 403 when the caller's `mark_project_as_booked` gate is off; 422 when the workspace has no project, is archived, or the company resolves no target stage.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Workspace id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bookWorkspace'
+        required: true
+      responses:
+        '200':
+          description: Book a workspace (mark the project as booked)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+      tags:
+      - Workspaces
+      operationId: bookWorkspace
+      x-hb-resource: workspaces
+      security:
+      - oauth2:
+        - workspaces.write
+      - oauth2:
+        - workspaces.write_own
+  /projects/{id}/workspaces:
+    post:
+      description: Create a workspace on a project
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createProjectWorkspace'
+        required: true
+      responses:
+        '201':
+          description: Create a workspace on a project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectWorkspace'
+      tags:
+      - Workspaces
+      operationId: createProjectWorkspace
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Create project workspace
+      x-summary-source: derived
+components:
+  schemas:
+    Api_V3_Entities_WorkspaceScheduledSession_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_WorkspaceScheduledSession'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    addWorkspaceMember:
+      type: object
+      properties:
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: user, contact. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - user
+            - contact
+      description: Add a member to a workspace (idempotent)
+    Api_V3_Entities_ActionSuggestion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Suggestion id (BSON ObjectId hex)
+        suggestion_type:
+          type:
+          - string
+          - 'null'
+          description: 'Suggestion kind. One of: followup_unconverted_lead'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Lifecycle status (pending, live, accepted, rejected, stale). Always "live" today — only live, unexpired suggestions are loaded.
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Why the follow-up is suggested (long form)
+        short_reason:
+          type:
+          - string
+          - 'null'
+          description: Why the follow-up is suggested (one line, for a badge or banner)
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the suggestion stops being offered (ISO8601)
+      required:
+      - id
+      - suggestion_type
+      - status
+      - reason
+      - short_reason
+      - expires_at
+    Api_V3_Entities_WorkspacePipelineStage:
+      type: object
+      properties:
+        stage_id:
+          type:
+          - string
+          - 'null'
+          description: Current pipeline stage id for the calling company (matches a PipelineStageCount.stage_id from getPipelineCounts); null when the workspace has no stage for that company
+        moved_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the workspace entered its current stage (ISO8601)
+        tracked:
+          type: boolean
+          description: Whether pipeline tracking is on for the CALLING USER (the bare-positive of the stored disable_tracking). A caller that turned tracking off sees false even while a teammate still tracks the workspace.
+      required:
+      - stage_id
+      - moved_at
+      - tracked
+    Api_V3_Entities_WorkspaceCounts:
+      type: object
+      properties:
+        all:
+          type: integer
+          format: int32
+          description: Total workspaces the caller's company owns (== listWorkspaces total_items)
+        active:
+          type: integer
+          format: int32
+          description: Company workspaces that are not archived (== listWorkspaces?archived=false)
+        inactive:
+          type: integer
+          format: int32
+          description: Company workspaces that are archived (== listWorkspaces?archived=true)
+      required:
+      - all
+      - active
+      - inactive
+      description: Api_V3_Entities_WorkspaceCounts model
+    Api_V3_Entities_ProjectWorkspace:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workspace id (BSON ObjectId hex)
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: Project (event) id (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Workspace tab name
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'Workspace kind (lowercase snake_case enum: general, team, design, all_vendors, timeline — almost always general)'
+        member_ids:
+          type: array
+          items:
+            type: string
+          description: User ids of this workspace's members — both vendors (the company team) and clients (BSON ObjectId hex)
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+      required:
+      - id
+      - project_id
+      - name
+      - kind
+      - member_ids
+      - created_at
+      description: Api_V3_Entities_ProjectWorkspace model
+    Api_V3_Entities_Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          description: 1-indexed number of the page returned (echoes the request)
+        per_page:
+          type: integer
+          format: int32
+          description: Page size (echoes the request)
+        total_items:
+          type: integer
+          format: int32
+          description: Total rows matching the query, across all pages
+        total_pages:
+          type: integer
+          format: int32
+          description: Total number of pages (0 when nothing matched)
+        last_page:
+          type: boolean
+          description: True when this is the final page — stop paging
+        offset:
+          type: integer
+          format: int32
+          description: Rows skipped before this page ((page - 1) * per_page)
+      required:
+      - page
+      - per_page
+      - total_items
+      - total_pages
+      - last_page
+      - offset
+    Api_V3_Entities_WorkspaceMember_Page:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_WorkspaceMember'
+          description: The rows on this page (empty when nothing matched)
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_Pagination'
+          description: Where this page sits in the full result set
+      required:
+      - data
+      - pagination
+      description: Api_V3_Entities_WorkspaceMember_Page model
+    Api_V3_Entities_UserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User id (BSON ObjectId hex)
+        first_name:
+          type:
+          - string
+          - 'null'
+          description: First name
+        last_name:
+          type:
+          - string
+          - 'null'
+          description: Last name
+        full_name:
+          type:
+          - string
+          - 'null'
+          description: Full display name
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email address
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+        address:
+          type:
+          - string
+          - 'null'
+          description: Postal address, as one string
+        job_title:
+          type:
+          - string
+          - 'null'
+          description: Role at their company
+        avatar_url:
+          type:
+          - string
+          - 'null'
+          description: Profile image URL
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'What kind of person this is (lowercase snake_case enum: client, vendor, both, other, malkut, admin, external). Distinct from a WorkspaceMember''s `kind`, which only answers client-vs-vendor for one membership row; this is the person''s own type.'
+        company:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_CompanySummary'
+          description: The business this person belongs to (null for a person with no company)
+      required:
+      - id
+      - first_name
+      - last_name
+      - full_name
+      - email
+      - phone_number
+      - address
+      - job_title
+      - avatar_url
+      - kind
+      - company
+    updateWorkspace:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Workspace tab name
+      description: Update a workspace (partial; renames the tab)
+    createProjectWorkspace:
+      type: object
+      properties:
+        kind:
+          type: string
+          description: Workspace kind (lowercase snake_case enum) — matches the Workspaces domain vocabulary
+          enum:
+          - general
+          - team
+          - design
+          - all_vendors
+          - timeline
+          default: general
+      description: Create a workspace on a project
+    Api_V3_Entities_Workspace:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workspace id (BSON ObjectId hex)
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: Project (Event) id this workspace wraps (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Workspace tab name
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'Workspace kind (lowercase snake_case enum: general, team, design, all_vendors, timeline — almost always general)'
+        status:
+          type:
+          - string
+          - 'null'
+          description: 'Lifecycle status (lowercase snake_case enum: lead, lead_sent, lead_archived, client, client_archived)'
+        source:
+          type:
+          - string
+          - 'null'
+          description: 'How the workspace originated (lowercase snake_case enum: manual, google, widget, company_team, vendor_referral, ...)'
+        archived:
+          type: boolean
+          description: Whether the workspace is archived for the owning company (a team member archived it)
+        inactive_user_ids:
+          type: array
+          items:
+            type: string
+          description: User ids for whom this workspace is archived — a caller in this list should treat the workspace as archived regardless of `archived` (BSON ObjectId hex)
+        creator_id:
+          type:
+          - string
+          - 'null'
+          description: User id of the workspace creator (BSON ObjectId hex)
+        creator_company_id:
+          type:
+          - string
+          - 'null'
+          description: Company that owns this workspace — the creator's company at creation time (BSON ObjectId hex)
+        member_ids:
+          type: array
+          items:
+            type: string
+          description: User ids of this workspace's members — both vendors (the company team) and clients (BSON ObjectId hex)
+        tag_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Tag ids attached to this workspace (BSON ObjectId hex)
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update time (ISO8601)
+        creator:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_UserSummary'
+          description: The person who created the workspace. null unless ?include=creator
+        pipeline_stage:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_WorkspacePipelineStage'
+          description: Where this workspace sits in the calling company's pipeline. null unless ?include=pipeline_stage, and also null when the workspace has no stage for that company. PER-VIEWER — see the entity.
+        automations:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_WorkspaceAutomations'
+          description: Which automations generation governs this workspace. null unless ?include=automations
+        action_suggestions:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ActionSuggestion_Projection'
+          description: 'Live follow-up suggestions for this workspace, soonest expiry first. null unless ?include=action_suggestions; `{ data: [], total_items: 0 }` when there are none. `total_items` is the true total, so total_items > data.length means max_action_suggestions truncated it.'
+        scheduled_sessions:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_WorkspaceScheduledSession_Projection'
+          description: 'Upcoming meetings on this workspace, earliest first. null unless ?include=scheduled_sessions; `{ data: [], total_items: 0 }` when there are none. Caller-relative: the rows come from the caller''s own calendar, so two members of one workspace can legitimately see different sets.'
+      required:
+      - id
+      - project_id
+      - name
+      - kind
+      - status
+      - source
+      - archived
+      - inactive_user_ids
+      - creator_id
+      - creator_company_id
+      - member_ids
+      - tag_ids
+      - created_at
+      - updated_at
+      - creator
+      - pipeline_stage
+      - automations
+      - action_suggestions
+      - scheduled_sessions
+      description: Api_V3_Entities_Workspace model
+    Api_V3_Entities_WorkspaceMember:
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: Member user id (BSON ObjectId hex)
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'Party kind of the member (lowercase snake_case enum: vendor, client)'
+        role:
+          type:
+          - string
+          - 'null'
+          description: 'Workspace role (lowercase snake_case enum: vendor, host) — the creator is the host'
+        status:
+          type:
+          - string
+          - 'null'
+          description: 'Membership status (lowercase snake_case enum: member_new, member_invite_sent, member_active)'
+        added_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the member was added to the workspace (ISO8601)
+        unsubscribed:
+          type: boolean
+          description: Whether this person opted out of the workspace-owning company's commercial email
+        sms_consent_confirmed:
+          type: boolean
+          description: Whether this client member has a live SMS consent on file — the gate on texting them. False for a vendor, and when the newest consent is revoked or predates the current consent text version. NOT company-scoped (parity with v2 ClientUser#valid_sms_consent?).
+        user:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_UserSummary'
+          description: The person behind user_id — name, email, avatar, kind and company. null unless ?include=user
+        contact:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_WorkspaceMemberContact'
+          description: The calling company's contact record for this member. null unless ?include=contact, and legitimately null for a vendor team member, who has no contact record.
+      required:
+      - user_id
+      - kind
+      - role
+      - status
+      - added_at
+      - unsubscribed
+      - sms_consent_confirmed
+      - user
+      - contact
+      description: Api_V3_Entities_WorkspaceMember model
+    Api_V3_Entities_CompanySummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectid
+          description: Company id
+        name:
+          type:
+          - string
+          - 'null'
+          description: Business name
+        type_name:
+          type:
+          - string
+          - 'null'
+          description: Human-readable company type (display string, resolved server-side)
+      required:
+      - id
+      - name
+      - type_name
+    Api_V3_Entities_WorkspaceMemberContact:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Contact id (BSON ObjectId hex)
+      required:
+      - id
+    Api_V3_Entities_WorkspaceAutomations:
+      type: object
+      properties:
+        mode:
+          type:
+          - string
+          - 'null'
+          description: 'Which automations generation applies to this workspace (lowercase snake_case enum: old, new). `old` when a v1 workflow is still pending on the workspace, otherwise whichever generation the creator''s account is on.'
+      required:
+      - mode
+    Api_V3_Entities_WorkspaceScheduledSession:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Session id (BSON ObjectId hex)
+        title:
+          type:
+          - string
+          - 'null'
+          description: Session title. Group-session titles have the client name stripped by the server.
+        date_time_start:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Start of the session (ISO8601)
+        date_time_end:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: End of the session (ISO8601)
+        date_start:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Calendar date for an all-day session (ISO8601)
+        date_end:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: End calendar date for a multi-day all-day session (ISO8601)
+        all_day:
+          type: boolean
+          description: Whether the session occupies the whole day
+        flow_id:
+          type:
+          - string
+          - 'null'
+          description: Smart file that booked this session (BSON ObjectId hex)
+      required:
+      - id
+      - title
+      - date_time_start
+      - date_time_end
+      - date_start
+      - date_end
+      - all_day
+      - flow_id
+    Api_V3_Entities_ActionSuggestion_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_ActionSuggestion'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    Api_V3_Entities_WorkspaceDeletable:
+      type: object
+      properties:
+        deletable:
+          type: boolean
+          description: Whether the workspace (and all its files/flows) can be deleted by the caller
+        reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - not_permitted
+          - has_undeletable_files
+          description: Why not, when deletable is false; null otherwise. not_permitted covers a client caller, a caller from another company, and a team member who is neither the creator nor a company owner/admin.
+      required:
+      - deletable
+      - reason
+      description: Api_V3_Entities_WorkspaceDeletable model
+    Api_V3_Entities_WorkspaceExistence:
+      type: object
+      properties:
+        has_any:
+          type: boolean
+          description: True if the caller's company owns at least one workspace
+      required:
+      - has_any
+      description: Api_V3_Entities_WorkspaceExistence model
+    bookWorkspace:
+      type: object
+      properties:
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: creator, pipeline_stage, automations, action_suggestions, scheduled_sessions. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - creator
+            - pipeline_stage
+            - automations
+            - action_suggestions
+            - scheduled_sessions
+        max_action_suggestions:
+          type: integer
+          format: int32
+          description: Max action_suggestions per row (1..25, default 3). Ordered by expires_at asc. Requires include=action_suggestions.
+          minimum: 1
+          maximum: 25
+        max_scheduled_sessions:
+          type: integer
+          format: int32
+          description: Max scheduled_sessions per row (1..100, default 25). Ordered by date_time_start asc. Requires include=scheduled_sessions.
+          minimum: 1
+          maximum: 100
+      description: Book a workspace (mark the project as booked)
+    archiveWorkspace:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Free-text archive reason (recorded on the pipeline data)
+      description: Archive a workspace for the caller and their team
+    Api_V3_Entities_Workspace_Page:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_Workspace'
+          description: The rows on this page (empty when nothing matched)
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_Pagination'
+          description: Where this page sits in the full result set
+      required:
+      - data
+      - pagination
+      description: Api_V3_Entities_Workspace_Page model
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      x-hb-automatic-scopes:
+      - offline_access
+      - honeybook.api
+      - honeybook.webhooks
+      - openid
+      flows:
+        authorizationCode:
+          authorizationUrl: https://oauth.honeybook.com/oauth2/auth
+          tokenUrl: https://oauth.honeybook.com/oauth2/token
+          scopes:
+            offline_access: Obtain a refresh token so access can outlive a single token lifetime
+            honeybook.api: General access to the HoneyBook API, granted with every token; on its own it only unlocks endpoints that have no resource-specific scope
+            honeybook.webhooks: Receive webhook notifications about changes in the account
+            openid: Identify the HoneyBook account that signed in. Used by sign-in flows
+            contacts.write: Create, update and delete contacts, and manage their tags
+            contacts.write_own: Create contacts and change only the ones your integration created, by sending partner_only=true
+            projects.read: Read projects, their payroll employees and scheduling conflicts, and the company's project types
+            projects.read_own: Read only the projects your integration created, by sending partner_only=true to the project endpoints, and the company's project types, where the flag is not sent
+            projects.write: Create and update projects, manage their dates, spaces and payroll employees, and manage the company's project types
+            projects.write_own: Create projects and change only the ones your integration created, by sending partner_only=true
+            workspaces.read: Read workspaces, their members and legacy files, and the pipeline
+            workspaces.read_own: Read only the workspaces your integration created, by sending partner_only=true
+            workspaces.write: Update, archive, book and delete workspaces, move them between pipeline stages, and manage their members and tags
+            workspaces.write_own: Change only the workspaces your integration created, by sending partner_only=true
+          refreshUrl: https://oauth.honeybook.com/oauth2/token
+      description: OAuth 2.0 authorization code flow with PKCE. See the Authentication guide.
+x-tagGroups:
+- name: ''
+  tags:
+  - Request Access
+- name: Guides
+  tags:
+  - Authentication
+  - Errors
+  - Pagination
+  - Filtering & Sorting
+  - Relation Includes
+  - Async Operations
+- name: API Reference
+  tags:
+  - Contacts
+  - Pipeline
+  - Workspaces
+  - Projects

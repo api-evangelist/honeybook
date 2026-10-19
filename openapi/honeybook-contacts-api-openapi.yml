@@ -1,0 +1,1521 @@
+openapi: 3.2.0
+info:
+  title: HoneyBook Contacts API
+  description: 'The HoneyBook API lets you read and write the data behind a HoneyBook account — contacts, projects, workspaces, smart files, tasks, notes, conversations and more.
+
+
+    It is a JSON HTTP API. Every request is authenticated with an OAuth 2.0 access token, every response is JSON, and every endpoint lives under a single versioned base path.
+
+
+    ### Base URL
+
+
+    ```
+
+    https://api.honeybook.com/api/v3
+
+    ```
+
+
+    The version is part of the path. A new major version gets its own path and its own documentation; endpoints in `v3` are not removed or changed in place.
+
+
+    ### Making a request
+
+
+    Send the access token as a bearer token:
+
+
+    ```bash
+
+    curl https://api.honeybook.com/api/v3/contacts \
+
+    -H "Authorization: Bearer "
+
+    ```
+
+
+    ### How this documentation is organized
+
+
+    **Guides** describe the conventions that apply across the whole API. Read Errors, Pagination and Filtering & Sorting once and they apply to every endpoint you touch.
+
+
+    **API Reference** documents every endpoint, grouped by the resource it belongs to.
+
+
+    ### Conventions worth knowing before you start
+
+
+    - **Identifiers are opaque strings.** An id is a 24-character hexadecimal string. Treat it as an opaque token: do not parse it, and do not assume any structure or ordering.
+
+    - **Timestamps are ISO 8601** in UTC, for example `2026-08-11T14:30:52Z`. Date-only fields are `YYYY-MM-DD`.
+
+    - **Money is an object**, not a bare number — an amount together with its currency. Never assume a currency.
+
+    - **Unknown query parameters are ignored, not rejected.** A misspelled filter name does not produce an error; it simply does not filter. Check your parameter names against the reference when a list returns more rows than you expected.
+
+    - **Absent is not the same as empty.** A field that was not requested and a field that is genuinely empty are distinguished — see Relation Includes.
+
+
+    The API is private. To get access, fill in the Request Access form.'
+  version: v3
+servers:
+- url: https://api.honeybook.com/api/v3
+  description: Production
+security:
+- oauth2: []
+tags:
+- name: Contacts
+  description: Operations about Contacts
+paths:
+  /contacts:
+    post:
+      description: Create a contact
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createContact'
+        required: true
+      responses:
+        '201':
+          description: Create a contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Contact'
+      tags:
+      - Contacts
+      operationId: createContact
+      x-hb-resource: contacts
+      security:
+      - oauth2:
+        - contacts.write
+      - oauth2:
+        - contacts.write_own
+      summary: Create contact
+      x-summary-source: derived
+  /contacts/{id}:
+    patch:
+      description: Update a contact (partial; data fields only)
+      parameters:
+      - in: path
+        name: id
+        description: Contact id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateContact'
+        required: true
+      responses:
+        '200':
+          description: Update a contact (partial; data fields only)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Contact'
+      tags:
+      - Contacts
+      operationId: updateContact
+      x-hb-resource: contacts
+      security:
+      - oauth2:
+        - contacts.write
+      - oauth2:
+        - contacts.write_own
+      summary: Update contact
+      x-summary-source: derived
+    delete:
+      summary: Delete a contact
+      description: Deletes the contact. An optional `reaction_text` — the reason the member typed while deleting — is recorded as a dislike Reaction on the contact when the contact came from an AI lead suggestion, and ignored otherwise.
+      parameters:
+      - in: path
+        name: id
+        description: Contact id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteContact'
+        required: true
+      responses:
+        '204':
+          description: Delete a contact
+      tags:
+      - Contacts
+      operationId: deleteContact
+      x-hb-risk:
+        level: dangerous
+        reason: Permanently deletes the contact.
+      x-hb-resource: contacts
+      security:
+      - oauth2:
+        - contacts.write
+      - oauth2:
+        - contacts.write_own
+  /contacts/{id}/interaction:
+    put:
+      description: Set (replace) a contact's last interaction
+      parameters:
+      - in: path
+        name: id
+        description: Contact id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateContactInteraction'
+        required: true
+      responses:
+        '200':
+          description: Set (replace) a contact's last interaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Contact'
+      tags:
+      - Contacts
+      operationId: updateContactInteraction
+      x-hb-resource: contacts
+      security:
+      - oauth2:
+        - contacts.write
+      - oauth2:
+        - contacts.write_own
+      summary: Update contact interaction
+      x-summary-source: derived
+  /contacts/{id}/tags/{tag_id}:
+    put:
+      description: Tag a contact (idempotent)
+      parameters:
+      - in: path
+        name: id
+        description: Contact id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tag_id
+        description: Tag id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addContactTag'
+        required: true
+      responses:
+        '200':
+          description: Tag a contact (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Contact'
+      tags:
+      - Contacts
+      operationId: addContactTag
+      x-hb-resource: contacts
+      security:
+      - oauth2:
+        - contacts.write
+      - oauth2:
+        - contacts.write_own
+      summary: Add contact tag
+      x-summary-source: derived
+    delete:
+      description: Untag a contact (idempotent)
+      parameters:
+      - in: path
+        name: id
+        description: Contact id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tag_id
+        description: Tag id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Untag a contact (idempotent)
+      tags:
+      - Contacts
+      operationId: removeContactTag
+      x-hb-resource: contacts
+      security:
+      - oauth2:
+        - contacts.write
+      - oauth2:
+        - contacts.write_own
+      summary: Remove contact tag
+      x-summary-source: derived
+components:
+  schemas:
+    Api_V3_Entities_CustomFieldValue:
+      oneOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Date'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Link'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_LongText'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_MultiSelect'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Number'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_SingleSelect'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Text'
+    Api_V3_Entities_Contact:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Contact id (BSON ObjectId hex)
+        company_id:
+          type: string
+          description: Owning company id (BSON ObjectId hex)
+        client_id:
+          type:
+          - string
+          - 'null'
+          description: Linked client user id, if this contact is a client (BSON ObjectId hex)
+        vendor_id:
+          type:
+          - string
+          - 'null'
+          description: Linked vendor user id, if this contact is a vendor (BSON ObjectId hex)
+        user_id:
+          type:
+          - string
+          - 'null'
+          description: The linked user id (vendor_id when a vendor, else client_id) (BSON ObjectId hex)
+        client_organization_id:
+          type:
+          - string
+          - 'null'
+          description: The client organization the linked client user belongs to, if any (BSON ObjectId hex). Published only when the organization RESOLVES within the caller's company, so it is null for a contact with no linked client, for an individual (non-business) client, when the organization belongs to another company (a ClientUser can be linked to contacts in more than one company), and when it has been deleted. Unlike other bare *_id fields this is therefore not the raw stored reference.
+        user:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_UserSummary'
+          description: The linked client/vendor user, incl. avatar_url. null unless ?include=user (and null if that user is gone).
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'Party discriminator. One of: client, vendor'
+        first_name:
+          type:
+          - string
+          - 'null'
+          description: Given name
+        last_name:
+          type:
+          - string
+          - 'null'
+          description: Family name
+        full_name:
+          type:
+          - string
+          - 'null'
+          description: Display name (first + last)
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email address
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+        address:
+          type:
+          - string
+          - 'null'
+          description: Mailing address (flat string)
+        website_url:
+          type:
+          - string
+          - 'null'
+          description: Website URL
+        company_name:
+          type:
+          - string
+          - 'null'
+          description: Contact's company name
+        company_type:
+          type:
+          - string
+          - 'null'
+          description: Contact's business kind (lowercase snake_case enum, e.g. photographer, planner)
+        job_title:
+          type:
+          - string
+          - 'null'
+          description: Job title
+        private_notes:
+          type:
+          - string
+          - 'null'
+          description: 'Private note about this contact. PER-VIEWER: each vendor sees only their own note (resolved against the authenticated caller), never a teammate''s.'
+        preferred:
+          type: boolean
+          description: Marked as a preferred vendor
+        manually_added:
+          type: boolean
+          description: Added by hand (vs. imported/derived)
+        unsubscribed:
+          type: boolean
+          description: Unsubscribed from this company's commercial emails
+        sandboxed:
+          type: boolean
+          description: This contact is part of the company's onboarding sandbox (demo data), not a real person
+        tag_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Tag ids attached to this contact (BSON ObjectId hex)
+        interaction:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ContactInteraction'
+          description: The last logged interaction with this contact
+        action_suggestions:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ActionSuggestion_Projection'
+          description: 'Live, unexpired AI follow-up suggestions for this contact, soonest-expiring first. null unless ?include=action_suggestions; `{ data: [], total_items: 0 }` when there are none or the company has follow-up suggestions switched off.'
+        workspaces:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_WorkspaceSummary_Projection'
+          description: 'The contact''s projects as they look to the caller, newest first. null unless ?include=workspaces; `{ data: [], total_items: 0 }` when the contact is on none. These are CoupleCard projects — NOT the messaging workspace, which is its own resource (POST /contacts/:id/conversation).'
+        tags:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_Tag_Projection'
+          description: The tags attached to this contact, ordered by name (case-insensitive). null unless ?include=tags; capped by max_tags, with the true total in total_items.
+        client_organization:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ClientOrganizationSummary'
+          description: The client business this contact belongs to. null unless ?include=client_organization, null for an individual client or a contact with no linked client, and null if the organization has been deleted.
+        enrichment:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ContactEnrichment'
+          description: Lead intelligence about the person behind this contact (their business, social presence, size and age), whether an enrichment run succeeded, and the member's reaction to it. null unless ?include=enrichment, and null for a vendor contact or one with no linked client user.
+        sms_consent_confirmed:
+          type: boolean
+          description: 'Whether the linked client user has a live SMS consent on file — the gate on texting this contact. False for a vendor contact, for a contact with no linked client user, and when the newest consent is revoked or predates the current consent text version. NOT company-scoped: a consent given to any company counts (parity with v2 ClientUser#valid_sms_consent?, which ignores SmsConsent#company_id).'
+        user_source:
+          type:
+          - string
+          - 'null'
+          description: How the person behind this contact first entered HoneyBook (lowercase enum, e.g. manual, vendor_referral, ai_lead_suggestion) — the PERSON's provenance, not this company's copy of it, so two companies that both know them see the same value. null for a contact whose linked user is missing or soft-deleted.
+        custom_fields:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Projection'
+          description: 'The contact''s custom field values, in the member''s own field order — one row per LIVE field, with `value` null when unset. null unless ?include=custom_fields; `{ data: [], total_items: 0 }` when the company defines none.'
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update time (ISO8601)
+      required:
+      - id
+      - company_id
+      - client_id
+      - vendor_id
+      - user_id
+      - client_organization_id
+      - user
+      - kind
+      - first_name
+      - last_name
+      - full_name
+      - email
+      - phone_number
+      - address
+      - website_url
+      - company_name
+      - company_type
+      - job_title
+      - private_notes
+      - preferred
+      - manually_added
+      - unsubscribed
+      - sandboxed
+      - tag_ids
+      - interaction
+      - action_suggestions
+      - workspaces
+      - tags
+      - client_organization
+      - enrichment
+      - sms_consent_confirmed
+      - user_source
+      - custom_fields
+      - created_at
+      - updated_at
+      description: Api_V3_Entities_Contact model
+    Api_V3_Entities_WorkspaceSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workspace id (BSON ObjectId hex)
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: Project (Event) this workspace wraps (BSON ObjectId hex)
+        project_name:
+          type:
+          - string
+          - 'null'
+          description: Project display name
+        pipeline_stage:
+          type:
+          - string
+          - 'null'
+          description: PER-VIEWER. Display name of the stage this project sits in for the caller. null when the caller has no pipeline data for it.
+        archived_reason:
+          type:
+          - string
+          - 'null'
+          description: PER-VIEWER. Why the project is blocked/archived for the caller, when it is.
+        is_archived:
+          type: boolean
+          description: PER-VIEWER. Whether the caller has archived this project for themselves.
+        user_type:
+          type:
+          - string
+          - 'null'
+          enum:
+          - client
+          - vendor
+          description: 'How the CONTACT participates in this project. One of: client, vendor.'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_UserSummary'
+          description: Everyone on the project (vendors and clients)
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+      required:
+      - id
+      - project_id
+      - project_name
+      - pipeline_stage
+      - archived_reason
+      - is_archived
+      - user_type
+      - members
+      - created_at
+    Api_V3_Entities_ActionSuggestion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Suggestion id (BSON ObjectId hex)
+        suggestion_type:
+          type:
+          - string
+          - 'null'
+          description: 'Suggestion kind. One of: followup_unconverted_lead'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Lifecycle status (pending, live, accepted, rejected, stale). Always "live" today — only live, unexpired suggestions are loaded.
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Why the follow-up is suggested (long form)
+        short_reason:
+          type:
+          - string
+          - 'null'
+          description: Why the follow-up is suggested (one line, for a badge or banner)
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the suggestion stops being offered (ISO8601)
+      required:
+      - id
+      - suggestion_type
+      - status
+      - reason
+      - short_reason
+      - expires_at
+    Api_V3_Entities_ContactEnrichment:
+      type: object
+      properties:
+        industry:
+          type:
+          - string
+          - 'null'
+          description: The person's industry
+        company_size:
+          type:
+          - string
+          - 'null'
+          description: Size of the person's business, as a label (e.g. 1-10)
+        instagram:
+          type:
+          - string
+          - 'null'
+          description: Instagram handle or URL
+        instagram_followers:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Instagram follower count
+        facebook:
+          type:
+          - string
+          - 'null'
+          description: Facebook page URL
+        twitter:
+          type:
+          - string
+          - 'null'
+          description: Twitter / X handle or URL
+        twitter_followers:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Twitter / X follower count
+        linkedin_personal:
+          type:
+          - string
+          - 'null'
+          description: The person's LinkedIn URL
+        linkedin_business:
+          type:
+          - string
+          - 'null'
+          description: The business's LinkedIn URL
+        specialties:
+          type:
+          - string
+          - 'null'
+          description: What the business specialises in
+        founded:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Year the business was founded
+        enriched:
+          type: boolean
+          description: Whether an enrichment run for this person completed successfully (the condition under which v2 sent its client_enrichment object). False while a run is pending, failed, or was never requested.
+        reaction:
+          type:
+          - string
+          - 'null'
+          enum:
+          - like
+          - dislike
+          - initial
+          description: 'The member''s reaction to the enrichment, recorded through the v2 enrichment_reaction action. One of: like, dislike, initial; null when no reaction was recorded.'
+      required:
+      - industry
+      - company_size
+      - instagram
+      - instagram_followers
+      - facebook
+      - twitter
+      - twitter_followers
+      - linkedin_personal
+      - linkedin_business
+      - specialties
+      - founded
+      - enriched
+      - reaction
+    addContactTag:
+      type: object
+      properties:
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: user, action_suggestions, workspaces, tags, client_organization, custom_fields, enrichment. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - user
+            - action_suggestions
+            - workspaces
+            - tags
+            - client_organization
+            - custom_fields
+            - enrichment
+        max_action_suggestions:
+          type: integer
+          format: int32
+          description: Max action_suggestions per row (1..25, default 3). Ordered by expires_at asc. Requires include=action_suggestions.
+          minimum: 1
+          maximum: 25
+        max_workspaces:
+          type: integer
+          format: int32
+          description: Max workspaces per row (1..25, default 3). Ordered by _id desc. Requires include=workspaces.
+          minimum: 1
+          maximum: 25
+        max_tags:
+          type: integer
+          format: int32
+          description: Max tags per row (1..25, default 25). Ordered by name asc. Requires include=tags.
+          minimum: 1
+          maximum: 25
+        max_custom_fields:
+          type: integer
+          format: int32
+          description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+          minimum: 1
+          maximum: 50
+      description: Tag a contact (idempotent)
+    Api_V3_Entities_ClientOrganizationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Client organization id (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Organization name
+        website_url:
+          type:
+          - string
+          - 'null'
+          description: Website URL
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+      required:
+      - id
+      - name
+      - website_url
+      - phone_number
+    Api_V3_Entities_CustomFieldValue_LongText:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            description: The text held by this field; null when the member has not filled it in
+          type:
+            type: string
+            enum:
+            - long_text
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_UserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User id (BSON ObjectId hex)
+        first_name:
+          type:
+          - string
+          - 'null'
+          description: First name
+        last_name:
+          type:
+          - string
+          - 'null'
+          description: Last name
+        full_name:
+          type:
+          - string
+          - 'null'
+          description: Full display name
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email address
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+        address:
+          type:
+          - string
+          - 'null'
+          description: Postal address, as one string
+        job_title:
+          type:
+          - string
+          - 'null'
+          description: Role at their company
+        avatar_url:
+          type:
+          - string
+          - 'null'
+          description: Profile image URL
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'What kind of person this is (lowercase snake_case enum: client, vendor, both, other, malkut, admin, external). Distinct from a WorkspaceMember''s `kind`, which only answers client-vs-vendor for one membership row; this is the person''s own type.'
+        company:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_CompanySummary'
+          description: The business this person belongs to (null for a person with no company)
+      required:
+      - id
+      - first_name
+      - last_name
+      - full_name
+      - email
+      - phone_number
+      - address
+      - job_title
+      - avatar_url
+      - kind
+      - company
+    Api_V3_Entities_CustomFieldValue_MultiSelect:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type: array
+            items:
+              $ref: '#/components/schemas/Api_V3_Entities_CustomFieldOption'
+            description: The selected options; `[]` when none. PATCH a comma-separated list of their `id`s to change them
+          type:
+            type: string
+            enum:
+            - multi_select
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_CustomFieldValue_Date:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            format: date
+            description: The calendar date held by this field (ISO8601, no time); null when unset
+          type:
+            type: string
+            enum:
+            - date
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Tag id (BSON ObjectId hex)
+        company_id:
+          type: string
+          description: Owning company id (BSON ObjectId hex)
+        name:
+          type: string
+          description: Tag display name
+        color:
+          type: string
+          description: 'Tag color (hex string, e.g. #EDE1D9)'
+        object_type:
+          type:
+          - string
+          - 'null'
+          description: 'Entity kind this tag is scoped to, if any (lowercase snake_case enum: project, contact)'
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update time (ISO8601)
+      required:
+      - id
+      - company_id
+      - name
+      - color
+      - object_type
+      - created_at
+      - updated_at
+    Api_V3_Entities_CompanySummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectid
+          description: Company id
+        name:
+          type:
+          - string
+          - 'null'
+          description: Business name
+        type_name:
+          type:
+          - string
+          - 'null'
+          description: Human-readable company type (display string, resolved server-side)
+      required:
+      - id
+      - name
+      - type_name
+    Api_V3_Entities_CustomFieldValue_SingleSelect:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            allOf:
+            - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldOption'
+            description: The selected option; null when nothing is selected. PATCH its `id` to change it
+          type:
+            type: string
+            enum:
+            - single_select
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_CustomFieldValue_Number:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - number
+            - 'null'
+            format: float
+            description: The number held by this field; null when unset. A real `0` renders as 0
+          type:
+            type: string
+            enum:
+            - number
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_CustomFieldValue_Link:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            description: The URL held by this field; null when unset. Not validated as a URL
+          type:
+            type: string
+            enum:
+            - link
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    deleteContact:
+      type: object
+      properties:
+        reaction_text:
+          type: string
+          description: Why the member is deleting this contact. Recorded as a dislike Reaction when the contact came from an AI lead suggestion (user_source ai_lead_suggestion); ignored otherwise.
+      description: Delete a contact
+    updateContactInteraction:
+      type: object
+      properties:
+        type:
+          type: string
+          description: How the interaction happened (manual, email, meeting, lead_form, contact_form)
+          enum:
+          - manual
+          - email
+          - meeting
+          - lead_form
+          - contact_form
+        context_type:
+          type: string
+          description: Where the interaction happened (Event, CompanyContact, ClientOrganization)
+          enum:
+          - Event
+          - CompanyContact
+          - ClientOrganization
+        interaction_date:
+          type: string
+          format: date-time
+          description: When the interaction happened (ISO8601)
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: user, action_suggestions, workspaces, tags, client_organization, custom_fields, enrichment. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - user
+            - action_suggestions
+            - workspaces
+            - tags
+            - client_organization
+            - custom_fields
+            - enrichment
+        max_action_suggestions:
+          type: integer
+          format: int32
+          description: Max action_suggestions per row (1..25, default 3). Ordered by expires_at asc. Requires include=action_suggestions.
+          minimum: 1
+          maximum: 25
+        max_workspaces:
+          type: integer
+          format: int32
+          description: Max workspaces per row (1..25, default 3). Ordered by _id desc. Requires include=workspaces.
+          minimum: 1
+          maximum: 25
+        max_tags:
+          type: integer
+          format: int32
+          description: Max tags per row (1..25, default 25). Ordered by name asc. Requires include=tags.
+          minimum: 1
+          maximum: 25
+        max_custom_fields:
+          type: integer
+          format: int32
+          description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+          minimum: 1
+          maximum: 50
+      description: Set (replace) a contact's last interaction
+    updateContact:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        address:
+          type: string
+          description: Mailing address (flat string)
+        website_url:
+          type: string
+        company_name:
+          type: string
+        job_title:
+          type: string
+        company_type:
+          type: string
+          description: Contact's business kind (snake_case enum)
+        private_notes:
+          type: string
+          description: Private note (per-viewer; stored against the caller)
+        preferred:
+          type: boolean
+          description: Mark/unmark as a preferred vendor (plain flag, no side effect)
+        client_organization:
+          type: object
+          description: Move the linked client into the company's client organization with this name, creating the organization if it does not exist yet (case-insensitive match within the company); the fields other than name are written only when it is created. Omit to leave the organization untouched — there is no clear-by-blank, detaching a client from its organization is not part of this endpoint. Ignored for a vendor contact. 400 when the client is the only member of its current organization or has active projects there.
+          properties:
+            name:
+              type: string
+              description: Organization name — the natural key within the company
+            phone_number:
+              type: string
+            website_url:
+              type: string
+            address:
+              type: string
+              description: Mailing address (flat string)
+            company_type:
+              type: string
+              description: The organization's business kind (snake_case enum)
+            private_notes:
+              type: string
+              description: Private note on the organization
+          required:
+          - name
+        sms_consent_confirmed:
+          type: boolean
+          description: The member confirms this client consented to SMS. true records the consent against phone_number when sent in the same request, else against the phone number already on the contact (400 if there is neither); false revokes any existing consent. Omit to leave consent untouched. Client contacts only.
+        custom_fields:
+          type: array
+          description: 'Values for the company''s contact custom fields. MERGE, not replace: only the schemas listed are written (upserted); a schema the contact already has a value for and that is absent from the list keeps its value. To clear one, send it with an empty value. Same behaviour as v2 save_contact in edit mode.'
+          items:
+            type: object
+            properties:
+              schema_id:
+                type: string
+                description: Custom-field schema id (BSON ObjectId hex). Must belong to the caller company — a foreign or unknown id is ignored, never written.
+              value:
+                type: array
+                description: 'The value(s). Always an array: a single-value field takes a one-element array, a multi-select takes one element per selection (option ids).'
+                items:
+                  type: string
+            required:
+            - schema_id
+            - value
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: user, action_suggestions, workspaces, tags, client_organization, custom_fields, enrichment. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - user
+            - action_suggestions
+            - workspaces
+            - tags
+            - client_organization
+            - custom_fields
+            - enrichment
+        max_action_suggestions:
+          type: integer
+          format: int32
+          description: Max action_suggestions per row (1..25, default 3). Ordered by expires_at asc. Requires include=action_suggestions.
+          minimum: 1
+          maximum: 25
+        max_workspaces:
+          type: integer
+          format: int32
+          description: Max workspaces per row (1..25, default 3). Ordered by _id desc. Requires include=workspaces.
+          minimum: 1
+          maximum: 25
+        max_tags:
+          type: integer
+          format: int32
+          description: Max tags per row (1..25, default 25). Ordered by name asc. Requires include=tags.
+          minimum: 1
+          maximum: 25
+        max_custom_fields:
+          type: integer
+          format: int32
+          description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+          minimum: 1
+          maximum: 50
+      description: Update a contact (partial; data fields only)
+    createContact:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Contact email (the natural key within a company)
+        kind:
+          type: string
+          description: 'Party kind: client (default) or vendor'
+          enum:
+          - client
+          - vendor
+          default: client
+        full_name:
+          type: string
+          description: Display name; split into first/last server-side
+        phone_number:
+          type: string
+        address:
+          type: string
+          description: Mailing address (flat string)
+        job_title:
+          type: string
+        website_url:
+          type: string
+        company_name:
+          type: string
+          description: Contact's company name
+        company_type:
+          type: string
+          description: Contact's business kind (snake_case enum)
+        private_notes:
+          type: string
+          description: Private note (per-viewer; stored against the caller)
+        source:
+          type: string
+          description: 'How this contact was added: manual (default) or vendor_referral (created through the refer-a-vendor flow, which attributes the referral)'
+          enum:
+          - manual
+          - vendor_referral
+          default: manual
+        client_organization:
+          type: object
+          description: Attach the new client to the company's client organization with this name, creating the organization if it does not exist yet (case-insensitive match within the company). The fields other than name are written only when the organization is created; an existing one is left as it is. Ignored for a vendor contact.
+          properties:
+            name:
+              type: string
+              description: Organization name — the natural key within the company
+            phone_number:
+              type: string
+            website_url:
+              type: string
+            address:
+              type: string
+              description: Mailing address (flat string)
+            company_type:
+              type: string
+              description: The organization's business kind (snake_case enum)
+            private_notes:
+              type: string
+              description: Private note on the organization
+          required:
+          - name
+        sms_consent_confirmed:
+          type: boolean
+          description: The member confirms this client consented to SMS. true records the consent (requires phone_number); false revokes any existing consent. Omit to leave consent untouched. Client contacts only.
+        custom_fields:
+          type: array
+          description: Values for the company's contact custom fields
+          items:
+            type: object
+            properties:
+              schema_id:
+                type: string
+                description: Custom-field schema id (BSON ObjectId hex). Must belong to the caller company — a foreign or unknown id is ignored, never written.
+              value:
+                type: array
+                description: 'The value(s). Always an array: a single-value field takes a one-element array, a multi-select takes one element per selection (option ids).'
+                items:
+                  type: string
+            required:
+            - schema_id
+            - value
+        interaction:
+          type: object
+          description: Log an initial last-interaction on the new contact
+          properties:
+            type:
+              type: string
+              description: How the interaction happened (manual, email, meeting, lead_form, contact_form)
+              enum:
+              - manual
+              - email
+              - meeting
+              - lead_form
+              - contact_form
+            context_type:
+              type: string
+              description: Where the interaction happened (Event, CompanyContact, ClientOrganization)
+              enum:
+              - Event
+              - CompanyContact
+              - ClientOrganization
+            interaction_at:
+              type: string
+              format: date-time
+              description: When the interaction happened (ISO8601)
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: user, action_suggestions, workspaces, tags, client_organization, custom_fields, enrichment. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - user
+            - action_suggestions
+            - workspaces
+            - tags
+            - client_organization
+            - custom_fields
+            - enrichment
+        max_action_suggestions:
+          type: integer
+          format: int32
+          description: Max action_suggestions per row (1..25, default 3). Ordered by expires_at asc. Requires include=action_suggestions.
+          minimum: 1
+          maximum: 25
+        max_workspaces:
+          type: integer
+          format: int32
+          description: Max workspaces per row (1..25, default 3). Ordered by _id desc. Requires include=workspaces.
+          minimum: 1
+          maximum: 25
+        max_tags:
+          type: integer
+          format: int32
+          description: Max tags per row (1..25, default 25). Ordered by name asc. Requires include=tags.
+          minimum: 1
+          maximum: 25
+        max_custom_fields:
+          type: integer
+          format: int32
+          description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+          minimum: 1
+          maximum: 50
+      required:
+      - email
+      description: Create a contact
+    Api_V3_Entities_WorkspaceSummary_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_WorkspaceSummary'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    Api_V3_Entities_ActionSuggestion_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_ActionSuggestion'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    Api_V3_Entities_CustomFieldValue_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    Api_V3_Entities_ContactInteraction:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: 'How the interaction happened. One of: manual, email, meeting, lead_form, contact_form'
+        context_type:
+          type:
+          - string
+          - 'null'
+          description: 'Where the interaction happened. One of: Event, CompanyContact, ClientOrganization'
+        interaction_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the interaction happened (ISO8601)
+        interaction_user_id:
+          type:
+          - string
+          - 'null'
+          description: User who logged the interaction (BSON ObjectId hex)
+      required:
+      - type
+      - context_type
+      - interaction_at
+      - interaction_user_id
+    Api_V3_Entities_Tag_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_Tag'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    Api_V3_Entities_CustomFieldOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectid
+          description: Option id
+        label:
+          type:
+          - string
+          - 'null'
+          description: Option display label
+        color:
+          type:
+          - string
+          - 'null'
+          description: 'Option color (hex string, e.g. #EDE1D9)'
+      required:
+      - id
+      - label
+      - color
+    Api_V3_Entities_CustomFieldValue_Text:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            description: The text held by this field; null when the member has not filled it in
+          type:
+            type: string
+            enum:
+            - text
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_CustomFieldValue_Shared:
+      type: object
+      properties:
+        field_id:
+          type: string
+          description: Id of the custom field definition this value belongs to (BSON ObjectId hex) — the `id` of a GET /custom_fields row, and the `:field_id` to PATCH
+        name:
+          type:
+          - string
+          - 'null'
+          description: Display name of the custom field, as the member defined it
+        type:
+          type: string
+          enum:
+          - text
+          - long_text
+          - date
+          - number
+          - link
+          - single_select
+          - multi_select
+          description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+      required:
+      - field_id
+      - name
+      - type
+      description: Fields every CustomFieldValue carries, whatever kind it is
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      x-hb-automatic-scopes:
+      - offline_access
+      - honeybook.api
+      - honeybook.webhooks
+      - openid
+      flows:
+        authorizationCode:
+          authorizationUrl: https://oauth.honeybook.com/oauth2/auth
+          tokenUrl: https://oauth.honeybook.com/oauth2/token
+          scopes:
+            offline_access: Obtain a refresh token so access can outlive a single token lifetime
+            honeybook.api: General access to the HoneyBook API, granted with every token; on its own it only unlocks endpoints that have no resource-specific scope
+            honeybook.webhooks: Receive webhook notifications about changes in the account
+            openid: Identify the HoneyBook account that signed in. Used by sign-in flows
+            contacts.write: Create, update and delete contacts, and manage their tags
+            contacts.write_own: Create contacts and change only the ones your integration created, by sending partner_only=true
+            projects.read: Read projects, their payroll employees and scheduling conflicts, and the company's project types
+            projects.read_own: Read only the projects your integration created, by sending partner_only=true to the project endpoints, and the company's project types, where the flag is not sent
+            projects.write: Create and update projects, manage their dates, spaces and payroll employees, and manage the company's project types
+            projects.write_own: Create projects and change only the ones your integration created, by sending partner_only=true
+            workspaces.read: Read workspaces, their members and legacy files, and the pipeline
+            workspaces.read_own: Read only the workspaces your integration created, by sending partner_only=true
+            workspaces.write: Update, archive, book and delete workspaces, move them between pipeline stages, and manage their members and tags
+            workspaces.write_own: Change only the workspaces your integration created, by sending partner_only=true
+          refreshUrl: https://oauth.honeybook.com/oauth2/token
+      description: OAuth 2.0 authorization code flow with PKCE. See the Authentication guide.
+x-tagGroups:
+- name: ''
+  tags:
+  - Request Access
+- name: Guides
+  tags:
+  - Authentication
+  - Errors
+  - Pagination
+  - Filtering & Sorting
+  - Relation Includes
+  - Async Operations
+- name: API Reference
+  tags:
+  - Contacts
+  - Pipeline
+  - Workspaces
+  - Projects

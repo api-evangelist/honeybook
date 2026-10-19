@@ -57,102 +57,6 @@ created: '2026-07-04'
 modified: '2026-07-04'
 specificationVersion: '0.23'
 apis:
-- aid: honeybook:honeybook-clients-api
-  name: HoneyBook Clients API
-  description: Clients and inquiries/leads captured through HoneyBook lead forms.
-  humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
-  baseURL: https://api.honeybook.com/v1
-  tags:
-  - Clients
-  properties:
-  - type: OpenAPI
-    url: openapi/honeybook-clients-api-openapi.yml
-  - type: Documentation
-    url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
-  - type: APIClientCollection
-    url: collections/honeybook.postman_collection.json
-  - type: APIClientCollection
-    url: collections/honeybook.opencollection.json
-  - type: Documentation
-    url: https://www.honeybook.com/online-contracts
-  - type: Documentation
-    url: https://www.honeybook.com/online-proposals
-  - type: Documentation
-    url: https://www.honeybook.com/pricing
-  - type: Documentation
-    url: https://www.honeybook.com/features/scheduling
-- aid: honeybook:honeybook-contracts-api
-  name: HoneyBook Contracts API
-  description: Contracts and e-signature agreements attached to a project.
-  humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
-  baseURL: https://api.honeybook.com/v1
-  tags:
-  - Contracts
-  properties:
-  - type: OpenAPI
-    url: openapi/honeybook-contracts-api-openapi.yml
-  - type: Documentation
-    url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
-  - type: APIClientCollection
-    url: collections/honeybook.postman_collection.json
-  - type: APIClientCollection
-    url: collections/honeybook.opencollection.json
-  - type: Documentation
-    url: https://www.honeybook.com/online-contracts
-  - type: Documentation
-    url: https://www.honeybook.com/online-proposals
-  - type: Documentation
-    url: https://www.honeybook.com/pricing
-  - type: Documentation
-    url: https://www.honeybook.com/features/scheduling
-- aid: honeybook:honeybook-invoices-api
-  name: HoneyBook Invoices API
-  description: Invoices issued to clients within a project.
-  humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
-  baseURL: https://api.honeybook.com/v1
-  tags:
-  - Invoices
-  properties:
-  - type: OpenAPI
-    url: openapi/honeybook-invoices-api-openapi.yml
-  - type: Documentation
-    url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
-  - type: APIClientCollection
-    url: collections/honeybook.postman_collection.json
-  - type: APIClientCollection
-    url: collections/honeybook.opencollection.json
-  - type: Documentation
-    url: https://www.honeybook.com/online-contracts
-  - type: Documentation
-    url: https://www.honeybook.com/online-proposals
-  - type: Documentation
-    url: https://www.honeybook.com/pricing
-  - type: Documentation
-    url: https://www.honeybook.com/features/scheduling
-- aid: honeybook:honeybook-payments-api
-  name: HoneyBook Payments API
-  description: Card and ACH payments made against invoices.
-  humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
-  baseURL: https://api.honeybook.com/v1
-  tags:
-  - Payments
-  properties:
-  - type: OpenAPI
-    url: openapi/honeybook-payments-api-openapi.yml
-  - type: Documentation
-    url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
-  - type: APIClientCollection
-    url: collections/honeybook.postman_collection.json
-  - type: APIClientCollection
-    url: collections/honeybook.opencollection.json
-  - type: Documentation
-    url: https://www.honeybook.com/online-contracts
-  - type: Documentation
-    url: https://www.honeybook.com/online-proposals
-  - type: Documentation
-    url: https://www.honeybook.com/pricing
-  - type: Documentation
-    url: https://www.honeybook.com/features/scheduling
 - aid: honeybook:honeybook-projects-api
   name: HoneyBook Projects API
   description: The visual project pipeline - bookings and pipeline stage.
@@ -179,16 +83,16 @@ apis:
     url: https://www.honeybook.com/pricing
   - type: Documentation
     url: https://www.honeybook.com/features/scheduling
-- aid: honeybook:honeybook-proposals-api
-  name: HoneyBook Proposals API
-  description: Combined quote + contract + invoice documents sent to clients.
+- aid: honeybook:honeybook-contacts-api
+  name: HoneyBook Contacts API
+  description: Operations about Contacts
   humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
   baseURL: https://api.honeybook.com/v1
   tags:
-  - Proposals
+  - Contacts
   properties:
   - type: OpenAPI
-    url: openapi/honeybook-proposals-api-openapi.yml
+    url: openapi/honeybook-contacts-api-openapi.yml
   - type: Documentation
     url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
   - type: APIClientCollection
@@ -203,16 +107,16 @@ apis:
     url: https://www.honeybook.com/pricing
   - type: Documentation
     url: https://www.honeybook.com/features/scheduling
-- aid: honeybook:honeybook-scheduler-api
-  name: HoneyBook Scheduler API
-  description: Self-service session-type booking (Essentials/Premium plans).
+- aid: honeybook:honeybook-pipeline-api
+  name: HoneyBook Pipeline API
+  description: Operations about Pipelines
   humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
   baseURL: https://api.honeybook.com/v1
   tags:
-  - Scheduler
+  - Pipeline
   properties:
   - type: OpenAPI
-    url: openapi/honeybook-scheduler-api-openapi.yml
+    url: openapi/honeybook-pipeline-api-openapi.yml
   - type: Documentation
     url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
   - type: APIClientCollection
@@ -227,18 +131,16 @@ apis:
     url: https://www.honeybook.com/pricing
   - type: Documentation
     url: https://www.honeybook.com/features/scheduling
-- aid: honeybook:honeybook-webhooks-api
-  name: HoneyBook Webhooks API
-  description: Modeled event subscription surface mirroring HoneyBook's Zapier triggers.
+- aid: honeybook:honeybook-workspaces-api
+  name: HoneyBook Workspaces API
+  description: Operations about Workspaces
   humanURL: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
   baseURL: https://api.honeybook.com/v1
   tags:
-  - Webhook
-  tags_raw:
-  - Webhooks
+  - Workspaces
   properties:
   - type: OpenAPI
-    url: openapi/honeybook-webhooks-api-openapi.yml
+    url: openapi/honeybook-workspaces-api-openapi.yml
   - type: Documentation
     url: https://help.honeybook.com/en/articles/2209205-automate-tasks-with-zapier
   - type: APIClientCollection

@@ -1,197 +1,1647 @@
 openapi: 3.2.0
 info:
-  title: HoneyBook API (Modeled) Projects API
-  description: HoneyBook does not publish a self-serve public developer API or a public API reference.
-  version: 1.0-modeled
-  contact:
-    name: HoneyBook
-    url: https://www.honeybook.com
+  title: HoneyBook Projects API
+  description: 'The HoneyBook API lets you read and write the data behind a HoneyBook account — contacts, projects, workspaces, smart files, tasks, notes, conversations and more.
+
+
+    It is a JSON HTTP API. Every request is authenticated with an OAuth 2.0 access token, every response is JSON, and every endpoint lives under a single versioned base path.
+
+
+    ### Base URL
+
+
+    ```
+
+    https://api.honeybook.com/api/v3
+
+    ```
+
+
+    The version is part of the path. A new major version gets its own path and its own documentation; endpoints in `v3` are not removed or changed in place.
+
+
+    ### Making a request
+
+
+    Send the access token as a bearer token:
+
+
+    ```bash
+
+    curl https://api.honeybook.com/api/v3/contacts \
+
+    -H "Authorization: Bearer "
+
+    ```
+
+
+    ### How this documentation is organized
+
+
+    **Guides** describe the conventions that apply across the whole API. Read Errors, Pagination and Filtering & Sorting once and they apply to every endpoint you touch.
+
+
+    **API Reference** documents every endpoint, grouped by the resource it belongs to.
+
+
+    ### Conventions worth knowing before you start
+
+
+    - **Identifiers are opaque strings.** An id is a 24-character hexadecimal string. Treat it as an opaque token: do not parse it, and do not assume any structure or ordering.
+
+    - **Timestamps are ISO 8601** in UTC, for example `2026-08-11T14:30:52Z`. Date-only fields are `YYYY-MM-DD`.
+
+    - **Money is an object**, not a bare number — an amount together with its currency. Never assume a currency.
+
+    - **Unknown query parameters are ignored, not rejected.** A misspelled filter name does not produce an error; it simply does not filter. Check your parameter names against the reference when a list returns more rows than you expected.
+
+    - **Absent is not the same as empty.** A field that was not requested and a field that is genuinely empty are distinguished — see Relation Includes.
+
+
+    The API is private. To get access, fill in the Request Access form.'
+  version: v3
 servers:
-- url: https://api.honeybook.com/v1
-  description: Modeled base path (unverified; not publicly documented by HoneyBook)
+- url: https://api.honeybook.com/api/v3
+  description: Production
 security:
 - oauth2: []
 tags:
 - name: Projects
-  description: The visual project pipeline - bookings and pipeline stage.
+  description: Operations about Projects
 paths:
   /projects:
     get:
-      operationId: listProjects
-      tags:
-      - Projects
-      summary: List projects
+      description: List the caller company's projects
       parameters:
-      - name: stage
-        in: query
-        description: Filter by pipeline stage.
+      - in: query
+        name: page
+        description: 1-indexed page number
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000
+          default: 1
+      - in: query
+        name: per_page
+        description: Page size (max 100)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      - in: query
+        name: include
+        description: 'Comma-separated relations to populate. Allowed: workspaces, custom_fields, cover_image. A relation not requested is null. Nested paths (a.b) are not supported.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - workspaces
+            - custom_fields
+            - cover_image
+      - in: query
+        name: max_workspaces
+        description: Max workspaces per row (1..25, default 25). Ordered by created_at asc. Requires include=workspaces.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 25
+      - in: query
+        name: max_custom_fields
+        description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: name_contains
+        description: event_name contains (case-insensitive)
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: project_type_id
+        description: project_type =
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: project_after
+        description: event_date >=
+        required: false
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: project_before
+        description: event_date <=
+        required: false
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: created_after
+        description: created_at >=
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_before
+        description: created_at <=
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: sort
+        description: 'Comma-separated sort keys; ''-'' prefix = descending. Allowed: created_at, project_date, name. Default: -created_at.'
+        required: false
         schema:
           type: string
       responses:
         '200':
-          description: A page of projects.
+          description: List the caller company's projects
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Project'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    post:
-      operationId: createProject
+                $ref: '#/components/schemas/Api_V3_Entities_Project_Page'
       tags:
       - Projects
+      operationId: listProjects
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.read
+      - oauth2:
+        - projects.read_own
+      summary: List projects
+      x-summary-source: derived
+    post:
       summary: Create a project
+      description: Creates the project and its first workspace. Ask for `?include=workspaces` to get that workspace back in this response — `workspaces.data[0].id` is the id needed to add a member to the new project (PUT /workspaces/:id/members/:user_id), so a caller does not have to discover it with a second call.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProjectInput'
+              $ref: '#/components/schemas/createProject'
+        required: true
       responses:
         '201':
-          description: The created project.
+          description: Create a project
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-  /projects/{id}:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    get:
-      operationId: getProject
+                $ref: '#/components/schemas/Api_V3_Entities_Project'
       tags:
       - Projects
-      summary: Retrieve a project
-      description: Modeled from the "Project Booked" and "Project Stage Changed" Zapier triggers.
+      operationId: createProject
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+  /projects/payroll_employee_counts:
+    get:
+      description: Project counts per payroll employee (batch)
+      parameters:
+      - in: query
+        name: employee_ids
+        description: Comma-separated payroll employee ids
+        required: true
+        schema:
+          type: string
       responses:
         '200':
-          description: The requested project.
+          description: Project counts per payroll employee (batch)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateProject
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectPayrollEmployeeCount'
       tags:
       - Projects
-      summary: Update a project (e.g. change pipeline stage)
-      requestBody:
+      operationId: getProjectPayrollEmployeeCounts
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.read
+      summary: Get project payroll employee counts
+      x-summary-source: derived
+  /projects/{id}:
+    get:
+      description: Get a project by id
+      parameters:
+      - in: path
+        name: id
+        description: Project id
         required: true
+        schema:
+          type: string
+      - in: query
+        name: include
+        description: 'Comma-separated relations to populate. Allowed: workspaces, custom_fields, cover_image. A relation not requested is null. Nested paths (a.b) are not supported.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - workspaces
+            - custom_fields
+            - cover_image
+      - in: query
+        name: max_workspaces
+        description: Max workspaces per row (1..25, default 25). Ordered by created_at asc. Requires include=workspaces.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 25
+      - in: query
+        name: max_custom_fields
+        description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Get a project by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Project'
+      tags:
+      - Projects
+      operationId: getProject
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.read
+      - oauth2:
+        - projects.read_own
+      summary: Get project
+      x-summary-source: derived
+    patch:
+      description: Update a project (partial; data fields only)
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProjectInput'
+              $ref: '#/components/schemas/updateProject'
+        required: true
       responses:
         '200':
-          description: The updated project.
+          description: Update a project (partial; data fields only)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: '#/components/schemas/Api_V3_Entities_Project'
+      tags:
+      - Projects
+      operationId: updateProject
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Update project
+      x-summary-source: derived
+  /projects/{id}/dates:
+    post:
+      summary: Add a project date
+      description: Appends a new, empty additional date with an auto-generated default label; populate its fields afterwards via PATCH /projects/:id/dates/:date_id.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '201':
+          description: Add a project date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectDate'
+      tags:
+      - Projects
+      operationId: createProjectDate
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+  /projects/{id}/dates/{date_id}:
+    patch:
+      description: Update a project date (partial)
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: date_id
+        description: Project date id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateProjectDate'
+        required: true
+      responses:
+        '200':
+          description: Update a project date (partial)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectDate'
+      tags:
+      - Projects
+      operationId: updateProjectDate
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Update project date
+      x-summary-source: derived
+    delete:
+      description: Delete a project date
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: date_id
+        description: Project date id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Delete a project date
+      tags:
+      - Projects
+      operationId: deleteProjectDate
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Delete project date
+      x-summary-source: derived
+  /projects/{id}/payroll_employees:
+    get:
+      description: List a project's payroll employees
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List a project's payroll employees
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectPayrollEmployees'
+      tags:
+      - Projects
+      operationId: listProjectPayrollEmployees
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.read
+      - oauth2:
+        - projects.read_own
+      summary: List project payroll employees
+      x-summary-source: derived
+  /projects/{id}/payroll_employees/{employee_id}:
+    put:
+      description: Assign a payroll employee to a project (idempotent)
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: employee_id
+        description: Payroll employee id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Assign a payroll employee to a project (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Project'
+      tags:
+      - Projects
+      operationId: addProjectPayrollEmployee
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Add project payroll employee
+      x-summary-source: derived
+    delete:
+      description: Remove a payroll employee from a project
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: employee_id
+        description: Payroll employee id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Remove a payroll employee from a project
+      tags:
+      - Projects
+      operationId: removeProjectPayrollEmployee
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Remove project payroll employee
+      x-summary-source: derived
+  /projects/{id}/spaces/{space_id}:
+    put:
+      description: Add a company space (a named venue/location from the company's spaces) to a project (idempotent)
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: space_id
+        description: Company space id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Add a company space (a named venue/location from the company's spaces) to a project (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_Project'
+      tags:
+      - Projects
+      operationId: addProjectSpace
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Add project space
+      x-summary-source: derived
+    delete:
+      description: Remove a company space from a project
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: space_id
+        description: Company space id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          description: Remove a company space from a project
+      tags:
+      - Projects
+      operationId: removeProjectSpace
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Remove project space
+      x-summary-source: derived
+  /projects/{id}/conflicts:
+    get:
+      description: Get scheduling conflicts for a project
+      parameters:
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get scheduling conflicts for a project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectConflicts'
+      tags:
+      - Projects
+      operationId: getProjectConflicts
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.read
+      summary: Get project conflicts
+      x-summary-source: derived
+  /projects/{id}/workspaces:
+    post:
+      description: Create a workspace on a project
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        description: 'Optional, 1-255 printable ASCII. Retrying with the same key, path and body within 24h returns the first response verbatim (`Idempotent-Replayed: true`) instead of creating another.'
+        required: false
+        schema:
+          type: string
+      - in: path
+        name: id
+        description: Project id
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: partner_only
+        description: '`true` restricts the request to records your integration created: lists and reads return only those, and updates and deletes reach only those (anything else is a 404). Omit or `false` reaches everything the granted scope allows, and requires the full scope. Creates accept `true` and always record your integration as the creator.'
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createProjectWorkspace'
+        required: true
+      responses:
+        '201':
+          description: Create a workspace on a project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_ProjectWorkspace'
+      tags:
+      - Projects
+      operationId: createProjectWorkspace
+      x-hb-resource: projects
+      security:
+      - oauth2:
+        - projects.write
+      - oauth2:
+        - projects.write_own
+      summary: Create project workspace
+      x-summary-source: derived
 components:
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      description: The unique identifier of the resource.
-      schema:
-        type: string
   schemas:
-    ProjectInput:
+    createProject:
       type: object
-      required:
-      - name
-      - client_id
       properties:
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: workspaces, custom_fields, cover_image. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - workspaces
+            - custom_fields
+            - cover_image
+        max_workspaces:
+          type: integer
+          format: int32
+          description: Max workspaces per row (1..25, default 25). Ordered by created_at asc. Requires include=workspaces.
+          minimum: 1
+          maximum: 25
+        max_custom_fields:
+          type: integer
+          format: int32
+          description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+          minimum: 1
+          maximum: 50
         name:
           type: string
-        client_id:
+          description: Project display name (auto-generated if omitted)
+        project_date:
           type: string
-        stage:
+          format: date
+          description: Primary start calendar date
+        project_end_date:
           type: string
-          description: Pipeline stage, e.g. Inquiry, Booked, Completed.
-    Project:
-      allOf:
-      - $ref: '#/components/schemas/ProjectInput'
-      - type: object
-        properties:
-          id:
-            type: string
-          booked:
-            type: boolean
-          booked_at:
-            type: string
-            format: date-time
-    Error:
+          format: date
+          description: Primary end calendar date
+        project_time_start:
+          type: string
+          description: Start time of day (e.g. "10:00 AM")
+        project_time_end:
+          type: string
+          description: End time of day
+        project_timezone:
+          type: string
+          description: IANA timezone
+        project_location:
+          type: string
+          description: Primary location/venue
+        project_details:
+          type: string
+          description: Free-text project details
+        guest_count:
+          type: integer
+          format: int32
+          description: Expected number of guests
+        budget:
+          type: integer
+          format: int32
+          description: Expected budget, a bare number in the company's currency
+        availability_type:
+          type: string
+          description: Availability kind (lowercase snake_case enum)
+          enum:
+          - busy
+          - free
+        project_type_id:
+          type: string
+          description: Company ProjectType id to classify the project
+        lead_source_id:
+          type: string
+          description: Id of one of the company's lead sources to attribute the project to
+        lead_source_open_text:
+          type: string
+          description: Free text for an "other" lead source
+      description: Create a project
+    Api_V3_Entities_CustomFieldValue:
+      oneOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Date'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Link'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_LongText'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_MultiSelect'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Number'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_SingleSelect'
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Text'
+    Api_V3_Entities_ProjectCoverImage:
       type: object
       properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            message:
-              type: string
-  responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+        id:
+          type: string
+          format: objectid
+          description: Image id
+        url:
+          type:
+          - string
+          - 'null'
+          description: Served image URL (a Cloudinary secure URL when the image was uploaded through Cloudinary)
+        original_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the original the image was taken from
+        cloudinary_public_id:
+          type:
+          - string
+          - 'null'
+          description: Cloudinary public id, so a client may derive its own transformations; null for non-Cloudinary images
+        width:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Source width in pixels
+        height:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Source height in pixels
+        position_x:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Crop rectangle: left offset in pixels'
+        position_y:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Crop rectangle: top offset in pixels'
+        position_w:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Crop rectangle: width in pixels'
+        position_h:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Crop rectangle: height in pixels'
+      required:
+      - id
+      - url
+      - original_url
+      - cloudinary_public_id
+      - width
+      - height
+      - position_x
+      - position_y
+      - position_w
+      - position_h
+    Api_V3_Entities_Project_Page:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_Project'
+          description: The rows on this page (empty when nothing matched)
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_Pagination'
+          description: Where this page sits in the full result set
+      required:
+      - data
+      - pagination
+      description: Api_V3_Entities_Project_Page model
+    Api_V3_Entities_CustomFieldValue_LongText:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            description: The text held by this field; null when the member has not filled it in
+          type:
+            type: string
+            enum:
+            - long_text
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_ProjectWorkspace:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workspace id (BSON ObjectId hex)
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: Project (event) id (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Workspace tab name
+        kind:
+          type:
+          - string
+          - 'null'
+          description: 'Workspace kind (lowercase snake_case enum: general, team, design, all_vendors, timeline — almost always general)'
+        member_ids:
+          type: array
+          items:
+            type: string
+          description: User ids of this workspace's members — both vendors (the company team) and clients (BSON ObjectId hex)
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+      required:
+      - id
+      - project_id
+      - name
+      - kind
+      - member_ids
+      - created_at
+      description: Api_V3_Entities_ProjectWorkspace model
+    Api_V3_Entities_Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          description: 1-indexed number of the page returned (echoes the request)
+        per_page:
+          type: integer
+          format: int32
+          description: Page size (echoes the request)
+        total_items:
+          type: integer
+          format: int32
+          description: Total rows matching the query, across all pages
+        total_pages:
+          type: integer
+          format: int32
+          description: Total number of pages (0 when nothing matched)
+        last_page:
+          type: boolean
+          description: True when this is the final page — stop paging
+        offset:
+          type: integer
+          format: int32
+          description: Rows skipped before this page ((page - 1) * per_page)
+      required:
+      - page
+      - per_page
+      - total_items
+      - total_pages
+      - last_page
+      - offset
+    Api_V3_Entities_ProjectConflictRef:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Conflicting project id (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Conflicting project display name
+      required:
+      - id
+      - name
+    Api_V3_Entities_CustomFieldValue_MultiSelect:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type: array
+            items:
+              $ref: '#/components/schemas/Api_V3_Entities_CustomFieldOption'
+            description: The selected options; `[]` when none. PATCH a comma-separated list of their `id`s to change them
+          type:
+            type: string
+            enum:
+            - multi_select
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    createProjectWorkspace:
+      type: object
+      properties:
+        kind:
+          type: string
+          description: Workspace kind (lowercase snake_case enum) — matches the Workspaces domain vocabulary
+          enum:
+          - general
+          - team
+          - design
+          - all_vendors
+          - timeline
+          default: general
+      description: Create a workspace on a project
+    Api_V3_Entities_CustomFieldValue_Date:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            format: date
+            description: The calendar date held by this field (ISO8601, no time); null when unset
+          type:
+            type: string
+            enum:
+            - date
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_Project:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project id (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Project display name
+        project_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Primary start calendar date (no time)
+        project_end_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Primary end calendar date (no time)
+        project_time_start:
+          type:
+          - string
+          - 'null'
+          description: Start time of day (e.g. "10:00 AM")
+        project_time_end:
+          type:
+          - string
+          - 'null'
+          description: End time of day (e.g. "6:00 PM")
+        project_timezone:
+          type:
+          - string
+          - 'null'
+          description: HoneyBook timezone abbreviation for the dates (e.g. "PDT")
+        project_timezone_iana:
+          type:
+          - string
+          - 'null'
+          description: IANA timezone for the dates (e.g. "America/Los_Angeles")
+        project_location:
+          type:
+          - string
+          - 'null'
+          description: Primary location/venue
+        project_details:
+          type:
+          - string
+          - 'null'
+          description: Free-text project details
+        guest_count:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Expected number of guests
+        budget:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Expected budget as the member entered it — a bare number in the company's currency, no minor units
+        lead_source_id:
+          type:
+          - string
+          - 'null'
+          description: Id of the company lead source this project is attributed to (BSON ObjectId hex); null when never set
+        lead_source_label:
+          type:
+          - string
+          - 'null'
+          description: Display label of that lead source (e.g. "Referral"), denormalized at write time
+        lead_source_open_text:
+          type:
+          - string
+          - 'null'
+          description: Free text the member entered for an "other" lead source; null otherwise
+        hide_conflict_action:
+          type: boolean
+          description: Whether the member dismissed the date-conflict banner for this project
+        editable:
+          type: boolean
+          description: 'PER-VIEWER. Whether the CALLER may edit this project: its creator, a company moderator or admin, or a team member who is on one of its workspaces. false for a team member who can read the company''s projects but is not on this one.'
+        availability_type:
+          type:
+          - string
+          - 'null'
+          description: Availability kind (lowercase snake_case enum, e.g. busy, free)
+        source:
+          type:
+          - string
+          - 'null'
+          description: How the project was created (lowercase snake_case enum, e.g. manual)
+        client_portal_visible:
+          type: boolean
+          description: Whether the client portal link is surfaced to the client in this project's emails
+        project_type_id:
+          type:
+          - string
+          - 'null'
+          description: Id of the company ProjectType this project is classified as (BSON ObjectId hex)
+        company_id:
+          type:
+          - string
+          - 'null'
+          description: Owning (creator) company id (BSON ObjectId hex)
+        creator_id:
+          type:
+          - string
+          - 'null'
+          description: Id of the user who created the project (BSON ObjectId hex)
+        payroll_employee_ids:
+          type: array
+          items:
+            type: string
+          description: Payroll employee ids assigned to this project (opaque payroll strings)
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_ProjectDate'
+          description: Additional project dates (embedded)
+        workspaces:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ProjectWorkspace_Projection'
+          description: 'The project''s workspaces, OLDEST FIRST — `data[0]` is the workspace created with the project, so `POST /projects?include=workspaces` returns the id needed to add a member to the new project. null unless ?include=workspaces; `{ data: [], total_items: 0 }` when the project has none.'
+        custom_fields:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Projection'
+          description: 'The project''s custom field values, in the member''s own field order — one row per LIVE field, with `value` null when unset. null unless ?include=custom_fields; `{ data: [], total_items: 0 }` when the company defines none.'
+        cover_image:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_ProjectCoverImage'
+          description: The project's cover image. null unless ?include=cover_image, and also null when the project has none.
+        created_at:
+          type: string
+          format: date-time
+          description: Creation time (ISO8601)
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update time (ISO8601)
+      required:
+      - id
+      - name
+      - project_date
+      - project_end_date
+      - project_time_start
+      - project_time_end
+      - project_timezone
+      - project_timezone_iana
+      - project_location
+      - project_details
+      - guest_count
+      - budget
+      - lead_source_id
+      - lead_source_label
+      - lead_source_open_text
+      - hide_conflict_action
+      - editable
+      - availability_type
+      - source
+      - client_portal_visible
+      - project_type_id
+      - company_id
+      - creator_id
+      - payroll_employee_ids
+      - dates
+      - workspaces
+      - custom_fields
+      - cover_image
+      - created_at
+      - updated_at
+      description: Api_V3_Entities_Project model
+    Api_V3_Entities_ProjectDate:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project date id (BSON ObjectId hex)
+        date_label:
+          type:
+          - string
+          - 'null'
+          description: Label for this date (e.g. "Ceremony")
+        project_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Start calendar date (no time)
+        project_end_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: End calendar date (no time)
+        project_time_start:
+          type:
+          - string
+          - 'null'
+          description: Start time of day (e.g. "10:00 AM")
+        project_time_end:
+          type:
+          - string
+          - 'null'
+          description: End time of day (e.g. "6:00 PM")
+        location:
+          type:
+          - string
+          - 'null'
+          description: Location for this date
+        location_label:
+          type:
+          - string
+          - 'null'
+          description: Label for the location
+        availability_type:
+          type:
+          - string
+          - 'null'
+          description: Availability kind for this date (lowercase snake_case enum)
+      required:
+      - id
+      - date_label
+      - project_date
+      - project_end_date
+      - project_time_start
+      - project_time_end
+      - location
+      - location_label
+      - availability_type
+      description: Api_V3_Entities_ProjectDate model
+    updateProjectDate:
+      type: object
+      properties:
+        date_label:
+          type: string
+        project_date:
+          type: string
+          format: date
+        project_end_date:
+          type: string
+          format: date
+        project_time_start:
+          type: string
+        project_time_end:
+          type: string
+        location:
+          type: string
+        location_label:
+          type: string
+        availability_type:
+          type: string
+          enum:
+          - busy
+          - free
+      description: Update a project date (partial)
+    Api_V3_Entities_CustomFieldValue_SingleSelect:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            allOf:
+            - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldOption'
+            description: The selected option; null when nothing is selected. PATCH its `id` to change it
+          type:
+            type: string
+            enum:
+            - single_select
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_CustomFieldValue_Number:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - number
+            - 'null'
+            format: float
+            description: The number held by this field; null when unset. A real `0` renders as 0
+          type:
+            type: string
+            enum:
+            - number
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_CustomFieldValue_Link:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            description: The URL held by this field; null when unset. Not validated as a URL
+          type:
+            type: string
+            enum:
+            - link
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_ProjectPayrollEmployees:
+      type: object
+      properties:
+        employee_ids:
+          type: array
+          items:
+            type: string
+          description: Payroll employee ids assigned to this project (opaque payroll strings)
+      required:
+      - employee_ids
+      description: Api_V3_Entities_ProjectPayrollEmployees model
+    updateProject:
+      type: object
+      properties:
+        include:
+          type: array
+          description: 'Comma-separated relations to populate. Allowed: workspaces, custom_fields, cover_image. A relation not requested is null. Nested paths (a.b) are not supported.'
+          items:
+            type: string
+            enum:
+            - workspaces
+            - custom_fields
+            - cover_image
+        max_workspaces:
+          type: integer
+          format: int32
+          description: Max workspaces per row (1..25, default 25). Ordered by created_at asc. Requires include=workspaces.
+          minimum: 1
+          maximum: 25
+        max_custom_fields:
+          type: integer
+          format: int32
+          description: Max custom_fields per row (1..50, default 50). Ordered by order asc. Requires include=custom_fields.
+          minimum: 1
+          maximum: 50
+        name:
+          type: string
+        project_date:
+          type: string
+          format: date
+        project_end_date:
+          type: string
+          format: date
+        project_time_start:
+          type: string
+        project_time_end:
+          type: string
+        project_timezone:
+          type: string
+        project_location:
+          type: string
+        project_details:
+          type: string
+        guest_count:
+          type: integer
+          format: int32
+        budget:
+          type: integer
+          format: int32
+          description: Expected budget, a bare number in the company's currency
+        availability_type:
+          type: string
+          enum:
+          - busy
+          - free
+        project_type_id:
+          type: string
+        lead_source_id:
+          type: string
+          description: Id of one of the company's lead sources to attribute the project to
+        lead_source_open_text:
+          type: string
+          description: Free text for an "other" lead source
+        client_portal_visible:
+          type: boolean
+          description: Surface/hide the client portal link in this project's client emails (plain flag, no side effect)
+      description: Update a project (partial; data fields only)
+    Api_V3_Entities_ProjectConflicts:
+      type: object
+      properties:
+        has_conflict:
+          type: boolean
+          description: Whether any conflicting project exists
+        lead_conflicting_project_ids:
+          type: array
+          items:
+            type: string
+          description: Ids of conflicting lead (unbooked) projects (BSON ObjectId hex)
+        booked_conflicting_project_ids:
+          type: array
+          items:
+            type: string
+          description: Ids of conflicting booked projects (BSON ObjectId hex)
+        lead_conflicting_projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_ProjectConflictRef'
+          description: The conflicting lead (unbooked) projects, id and name, in the same order as lead_conflicting_project_ids
+        booked_conflicting_projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_ProjectConflictRef'
+          description: The conflicting booked projects, id and name, in the same order as booked_conflicting_project_ids
+      required:
+      - has_conflict
+      - lead_conflicting_project_ids
+      - booked_conflicting_project_ids
+      - lead_conflicting_projects
+      - booked_conflicting_projects
+      description: Api_V3_Entities_ProjectConflicts model
+    Api_V3_Entities_CustomFieldValue_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
+    Api_V3_Entities_CustomFieldOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectid
+          description: Option id
+        label:
+          type:
+          - string
+          - 'null'
+          description: Option display label
+        color:
+          type:
+          - string
+          - 'null'
+          description: 'Option color (hex string, e.g. #EDE1D9)'
+      required:
+      - id
+      - label
+      - color
+    Api_V3_Entities_CustomFieldValue_Text:
+      allOf:
+      - $ref: '#/components/schemas/Api_V3_Entities_CustomFieldValue_Shared'
+      - type: object
+        properties:
+          value:
+            type:
+            - string
+            - 'null'
+            description: The text held by this field; null when the member has not filled it in
+          type:
+            type: string
+            enum:
+            - text
+            description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+        required:
+        - type
+        - value
+    Api_V3_Entities_ProjectPayrollEmployeeCount:
+      type: object
+      properties:
+        employee_id:
+          type: string
+          description: Payroll employee id (opaque payroll string)
+        project_count:
+          type: integer
+          format: int32
+          description: Number of the company's projects this employee is assigned to
+      required:
+      - employee_id
+      - project_count
+      description: Api_V3_Entities_ProjectPayrollEmployeeCount model
+    Api_V3_Entities_CustomFieldValue_Shared:
+      type: object
+      properties:
+        field_id:
+          type: string
+          description: Id of the custom field definition this value belongs to (BSON ObjectId hex) — the `id` of a GET /custom_fields row, and the `:field_id` to PATCH
+        name:
+          type:
+          - string
+          - 'null'
+          description: Display name of the custom field, as the member defined it
+        type:
+          type: string
+          enum:
+          - text
+          - long_text
+          - date
+          - number
+          - link
+          - single_select
+          - multi_select
+          description: 'The field''s value kind — the discriminator. One of: text, long_text, date, number, link, single_select, multi_select'
+      required:
+      - field_id
+      - name
+      - type
+      description: Fields every CustomFieldValue carries, whatever kind it is
+    Api_V3_Entities_ProjectWorkspace_Projection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_ProjectWorkspace'
+          description: The projected rows, capped by the caller's max_*
+        total_items:
+          type: integer
+          format: int32
+          description: True total for this parent. total_items > data.length means the cap was hit
+      required:
+      - data
+      - total_items
   securitySchemes:
     oauth2:
       type: oauth2
-      description: Third-party integration guides reference OAuth 2.0 against api.honeybook.com, but are inconsistent on the exact token endpoint and grant type and are not independently verifiable. Modeled here as an authorization-code flow with refresh tokens, the most common pattern for a user-data platform of this kind; treat as unverified.
+      x-hb-automatic-scopes:
+      - offline_access
+      - honeybook.api
+      - honeybook.webhooks
+      - openid
       flows:
         authorizationCode:
-          authorizationUrl: https://api.honeybook.com/oauth/authorize
-          tokenUrl: https://api.honeybook.com/oauth/token
+          authorizationUrl: https://oauth.honeybook.com/oauth2/auth
+          tokenUrl: https://oauth.honeybook.com/oauth2/token
           scopes:
-            clients.read: Read clients and inquiries.
-            clients.write: Create and update clients and inquiries.
-            projects.read: Read projects and pipeline stage.
-            projects.write: Create and update projects.
-            contracts.read: Read contracts.
-            contracts.write: Create contracts.
-            proposals.read: Read proposals.
-            proposals.write: Create proposals.
-            invoices.read: Read invoices.
-            invoices.write: Create invoices.
-            payments.read: Read payments.
-            scheduler.read: Read session types and bookings.
-            scheduler.write: Create bookings.
-            webhooks.write: Manage webhook subscriptions.
-externalDocs:
-  description: HoneyBook integrations and partnerships help center
-  url: https://help.honeybook.com/en/collections/68941-integrations-and-partnerships
+            offline_access: Obtain a refresh token so access can outlive a single token lifetime
+            honeybook.api: General access to the HoneyBook API, granted with every token; on its own it only unlocks endpoints that have no resource-specific scope
+            honeybook.webhooks: Receive webhook notifications about changes in the account
+            openid: Identify the HoneyBook account that signed in. Used by sign-in flows
+            contacts.write: Create, update and delete contacts, and manage their tags
+            contacts.write_own: Create contacts and change only the ones your integration created, by sending partner_only=true
+            projects.read: Read projects, their payroll employees and scheduling conflicts, and the company's project types
+            projects.read_own: Read only the projects your integration created, by sending partner_only=true to the project endpoints, and the company's project types, where the flag is not sent
+            projects.write: Create and update projects, manage their dates, spaces and payroll employees, and manage the company's project types
+            projects.write_own: Create projects and change only the ones your integration created, by sending partner_only=true
+            workspaces.read: Read workspaces, their members and legacy files, and the pipeline
+            workspaces.read_own: Read only the workspaces your integration created, by sending partner_only=true
+            workspaces.write: Update, archive, book and delete workspaces, move them between pipeline stages, and manage their members and tags
+            workspaces.write_own: Change only the workspaces your integration created, by sending partner_only=true
+          refreshUrl: https://oauth.honeybook.com/oauth2/token
+      description: OAuth 2.0 authorization code flow with PKCE. See the Authentication guide.
+x-tagGroups:
+- name: ''
+  tags:
+  - Request Access
+- name: Guides
+  tags:
+  - Authentication
+  - Errors
+  - Pagination
+  - Filtering & Sorting
+  - Relation Includes
+  - Async Operations
+- name: API Reference
+  tags:
+  - Contacts
+  - Pipeline
+  - Workspaces
+  - Projects

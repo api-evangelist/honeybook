@@ -1,0 +1,605 @@
+openapi: 3.2.0
+info:
+  title: HoneyBook Pipeline API
+  description: 'The HoneyBook API lets you read and write the data behind a HoneyBook account — contacts, projects, workspaces, smart files, tasks, notes, conversations and more.
+
+
+    It is a JSON HTTP API. Every request is authenticated with an OAuth 2.0 access token, every response is JSON, and every endpoint lives under a single versioned base path.
+
+
+    ### Base URL
+
+
+    ```
+
+    https://api.honeybook.com/api/v3
+
+    ```
+
+
+    The version is part of the path. A new major version gets its own path and its own documentation; endpoints in `v3` are not removed or changed in place.
+
+
+    ### Making a request
+
+
+    Send the access token as a bearer token:
+
+
+    ```bash
+
+    curl https://api.honeybook.com/api/v3/contacts \
+
+    -H "Authorization: Bearer "
+
+    ```
+
+
+    ### How this documentation is organized
+
+
+    **Guides** describe the conventions that apply across the whole API. Read Errors, Pagination and Filtering & Sorting once and they apply to every endpoint you touch.
+
+
+    **API Reference** documents every endpoint, grouped by the resource it belongs to.
+
+
+    ### Conventions worth knowing before you start
+
+
+    - **Identifiers are opaque strings.** An id is a 24-character hexadecimal string. Treat it as an opaque token: do not parse it, and do not assume any structure or ordering.
+
+    - **Timestamps are ISO 8601** in UTC, for example `2026-08-11T14:30:52Z`. Date-only fields are `YYYY-MM-DD`.
+
+    - **Money is an object**, not a bare number — an amount together with its currency. Never assume a currency.
+
+    - **Unknown query parameters are ignored, not rejected.** A misspelled filter name does not produce an error; it simply does not filter. Check your parameter names against the reference when a list returns more rows than you expected.
+
+    - **Absent is not the same as empty.** A field that was not requested and a field that is genuinely empty are distinguished — see Relation Includes.
+
+
+    The API is private. To get access, fill in the Request Access form.'
+  version: v3
+servers:
+- url: https://api.honeybook.com/api/v3
+  description: Production
+security:
+- oauth2: []
+tags:
+- name: Pipeline
+  description: Operations about Pipelines
+paths:
+  /pipeline:
+    get:
+      summary: List the caller company's pipeline (workspaces by stage)
+      description: Company-scoped. Filter by stage/view/group/category/tags/types/sources/suggestion; sort by stage_moved_at (default desc), project_date, name, last_activity_at, created_at, stage, project_type, or lead_source.
+      parameters:
+      - in: query
+        name: user_ids
+        description: 'Team-member user ids whose pipeline to show (default: the caller). Watching others requires moderator+.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: page
+        description: 1-indexed page number
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000
+          default: 1
+      - in: query
+        name: per_page
+        description: Page size (max 100)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      - in: query
+        name: stage_ids
+        description: Pipeline stage ids to include (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: view_id
+        description: Custom view id; resolves to the view's stage scope (overridden by stage_ids)
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: group
+        description: Stage group
+        required: false
+        schema:
+          type: string
+          enum:
+          - opportunities
+          - projects
+      - in: query
+        name: category
+        description: Stage category
+        required: false
+        schema:
+          type: string
+          enum:
+          - lead
+          - booked
+          - other
+      - in: query
+        name: tag_ids
+        description: Workspace tag ids (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: project_type_ids
+        description: Project-type ids (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: lead_source_ids
+        description: Lead-source ids (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: archived
+        description: Return archived workspaces instead of active ones
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: untracked
+        description: Include tracking-disabled (untracked) workspaces
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: has_suggestion
+        description: Restrict to workspaces that do (true) or do not (false) have a live follow-up suggestion. Ignored when the caller has follow-up suggestions disabled
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: sort
+        description: 'Sort key; ''-'' prefix = descending. A single key only. Allowed: stage_moved_at, project_date, name, last_activity_at, created_at, stage, project_type, lead_source. Default: -stage_moved_at.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List the caller company's pipeline (workspaces by stage)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_PipelineEntry_Page'
+      tags:
+      - Pipeline
+      operationId: listPipeline
+      x-hb-resource: pipeline
+      security:
+      - oauth2:
+        - workspaces.read
+  /pipeline/counts:
+    get:
+      summary: Pipeline stage/category tallies for the caller's company
+      description: Company-wide active/archived/untracked totals, per-category tallies, and per-stage counts. Custom views are NOT included (see GET /custom_views).
+      parameters:
+      - in: query
+        name: user_ids
+        description: 'Team-member user ids whose pipeline to tally (default: the caller). Tallying others requires moderator+.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: view_id
+        description: Custom view id; resolves to the view's stage scope (overridden by stage_ids)
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: group
+        description: Stage group
+        required: false
+        schema:
+          type: string
+          enum:
+          - opportunities
+          - projects
+      - in: query
+        name: category
+        description: Stage category
+        required: false
+        schema:
+          type: string
+          enum:
+          - lead
+          - booked
+          - other
+      - in: query
+        name: tag_ids
+        description: Workspace tag ids (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: project_type_ids
+        description: Project-type ids (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: lead_source_ids
+        description: Lead-source ids (comma-separated)
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: has_suggestion
+        description: Restrict to workspaces that do (true) or do not (false) have a live follow-up suggestion. Ignored when the caller has follow-up suggestions disabled
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Pipeline stage/category tallies for the caller's company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api_V3_Entities_PipelineCounts'
+      tags:
+      - Pipeline
+      operationId: getPipelineCounts
+      x-hb-resource: pipeline
+      security:
+      - oauth2:
+        - workspaces.read
+components:
+  schemas:
+    Api_V3_Entities_PipelineEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workspace id (BSON ObjectId hex)
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: Project (Event) id this workspace wraps (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Project name
+        project_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Project date (calendar date, no time)
+        project_end_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Project end date (calendar date, no time)
+        project_location:
+          type:
+          - string
+          - 'null'
+          description: Project location
+        project_type:
+          type:
+          - string
+          - 'null'
+          description: Project type label
+        cover_image_url:
+          type:
+          - string
+          - 'null'
+          description: Project cover image URL; null when the project has no image. A Cloudinary secure URL when the image was uploaded through Cloudinary, so a client may derive its own transformations from it
+        current_stage:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_PipelineStageRef'
+          description: The workspace's current pipeline stage (per the requested pipeline user)
+        active:
+          type: boolean
+          description: Whether the workspace is active (not archived) for the requested pipeline user(s)
+        tracked:
+          type: boolean
+          description: Whether the workspace is tracked in the pipeline (false = tracking disabled)
+        tags:
+          type: array
+          items:
+            type: string
+          description: Workspace tags (only when owned by the caller's company; otherwise empty)
+        member_count:
+          type: integer
+          format: int32
+          description: Number of members (vendors + clients)
+        has_follow_up_suggestion:
+          type: boolean
+          description: PER-VIEWER. Whether a live, unexpired follow-up suggestion exists for this workspace. Always false when the caller has follow-up suggestions disabled
+        last_activity_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Last activity time (ISO8601)
+        created_at:
+          type: string
+          format: date-time
+          description: Workspace creation time (ISO8601)
+      required:
+      - id
+      - project_id
+      - name
+      - project_date
+      - project_end_date
+      - project_location
+      - project_type
+      - cover_image_url
+      - current_stage
+      - active
+      - tracked
+      - tags
+      - member_count
+      - has_follow_up_suggestion
+      - last_activity_at
+      - created_at
+    Api_V3_Entities_Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          description: 1-indexed number of the page returned (echoes the request)
+        per_page:
+          type: integer
+          format: int32
+          description: Page size (echoes the request)
+        total_items:
+          type: integer
+          format: int32
+          description: Total rows matching the query, across all pages
+        total_pages:
+          type: integer
+          format: int32
+          description: Total number of pages (0 when nothing matched)
+        last_page:
+          type: boolean
+          description: True when this is the final page — stop paging
+        offset:
+          type: integer
+          format: int32
+          description: Rows skipped before this page ((page - 1) * per_page)
+      required:
+      - page
+      - per_page
+      - total_items
+      - total_pages
+      - last_page
+      - offset
+    Api_V3_Entities_PipelineCounts:
+      type: object
+      properties:
+        active_count:
+          type: integer
+          format: int32
+          description: Total active (tracked, not archived) workspaces
+        archived_count:
+          type: integer
+          format: int32
+          description: Total archived workspaces
+        untracked_count:
+          type: integer
+          format: int32
+          description: Total tracking-disabled (untracked) workspaces
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_PipelineCategoryCount'
+          description: Per-category tallies (lead, booked, other)
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_PipelineStageCount'
+          description: Per-stage tallies, ordered by the stage's display order
+      required:
+      - active_count
+      - archived_count
+      - untracked_count
+      - categories
+      - stages
+      description: Api_V3_Entities_PipelineCounts model
+    Api_V3_Entities_PipelineStageRef:
+      type: object
+      properties:
+        stage_id:
+          type:
+          - string
+          - 'null'
+          description: Current pipeline stage id (matches a PipelineStageCount.stage_id from getPipelineCounts); null when untracked
+        moved_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the workspace entered its current stage (ISO8601); null when untracked
+      required:
+      - stage_id
+      - moved_at
+    Api_V3_Entities_PipelineCategoryCount:
+      type: object
+      properties:
+        category:
+          type: string
+          description: 'Stage category (lowercase snake_case enum: lead, booked, other)'
+        active_count:
+          type: integer
+          format: int32
+          description: Active (not archived) workspaces in this category
+        archived_count:
+          type: integer
+          format: int32
+          description: Archived workspaces in this category
+      required:
+      - category
+      - active_count
+      - archived_count
+    Api_V3_Entities_PipelineEntry_Page:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api_V3_Entities_PipelineEntry'
+          description: The rows on this page (empty when nothing matched)
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Api_V3_Entities_Pagination'
+          description: Where this page sits in the full result set
+      required:
+      - data
+      - pagination
+      description: Api_V3_Entities_PipelineEntry_Page model
+    Api_V3_Entities_PipelineStageCount:
+      type: object
+      properties:
+        stage_id:
+          type: string
+          description: Pipeline stage id (BSON ObjectId hex)
+        name:
+          type:
+          - string
+          - 'null'
+          description: Stage display name (server-localized for built-in stages; the author-supplied name for custom ones)
+        system_key:
+          type:
+          - string
+          - 'null'
+          description: Stable key of a built-in stage (e.g. '_INQUIRY_'); null for a company's custom stage. Lets a client localize the stage itself instead of using `name`
+        category:
+          type:
+          - string
+          - 'null'
+          description: 'Stage category (lowercase snake_case enum: lead, booked, other)'
+        group:
+          type:
+          - string
+          - 'null'
+          description: 'Stage group (lowercase snake_case enum: opportunities, projects)'
+        order:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Display order (float; gaps allow insertion between stages)
+        active_count:
+          type: integer
+          format: int32
+          description: Active (not archived) workspaces in this stage
+        archived_count:
+          type: integer
+          format: int32
+          description: Archived workspaces in this stage
+      required:
+      - stage_id
+      - name
+      - system_key
+      - category
+      - group
+      - order
+      - active_count
+      - archived_count
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      x-hb-automatic-scopes:
+      - offline_access
+      - honeybook.api
+      - honeybook.webhooks
+      - openid
+      flows:
+        authorizationCode:
+          authorizationUrl: https://oauth.honeybook.com/oauth2/auth
+          tokenUrl: https://oauth.honeybook.com/oauth2/token
+          scopes:
+            offline_access: Obtain a refresh token so access can outlive a single token lifetime
+            honeybook.api: General access to the HoneyBook API, granted with every token; on its own it only unlocks endpoints that have no resource-specific scope
+            honeybook.webhooks: Receive webhook notifications about changes in the account
+            openid: Identify the HoneyBook account that signed in. Used by sign-in flows
+            contacts.write: Create, update and delete contacts, and manage their tags
+            contacts.write_own: Create contacts and change only the ones your integration created, by sending partner_only=true
+            projects.read: Read projects, their payroll employees and scheduling conflicts, and the company's project types
+            projects.read_own: Read only the projects your integration created, by sending partner_only=true to the project endpoints, and the company's project types, where the flag is not sent
+            projects.write: Create and update projects, manage their dates, spaces and payroll employees, and manage the company's project types
+            projects.write_own: Create projects and change only the ones your integration created, by sending partner_only=true
+            workspaces.read: Read workspaces, their members and legacy files, and the pipeline
+            workspaces.read_own: Read only the workspaces your integration created, by sending partner_only=true
+            workspaces.write: Update, archive, book and delete workspaces, move them between pipeline stages, and manage their members and tags
+            workspaces.write_own: Change only the workspaces your integration created, by sending partner_only=true
+          refreshUrl: https://oauth.honeybook.com/oauth2/token
+      description: OAuth 2.0 authorization code flow with PKCE. See the Authentication guide.
+x-tagGroups:
+- name: ''
+  tags:
+  - Request Access
+- name: Guides
+  tags:
+  - Authentication
+  - Errors
+  - Pagination
+  - Filtering & Sorting
+  - Relation Includes
+  - Async Operations
+- name: API Reference
+  tags:
+  - Contacts
+  - Pipeline
+  - Workspaces
+  - Projects
