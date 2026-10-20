@@ -15,6 +15,7 @@
   evidence: https://zapier.com/apps/google-drive/integrations/honeybook/19937/create-new-google-drive-folders-when-new-honeybook-projects-are-booked
   template: https://zapier.com/apps/google-drive/integrations/honeybook/19937/create-new-google-drive-folders-when-new-honeybook-projects-are-booked
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-add-new-honeybook-inquiries-to-a-mailchimp-list
@@ -29,6 +30,7 @@
   evidence: https://zapier.com/apps/honeybook/integrations/mailchimp/18200/add-new-honeybook-inquiries-to-a-mailchimp-list
   template: https://zapier.com/apps/honeybook/integrations/mailchimp/18200/add-new-honeybook-inquiries-to-a-mailchimp-list
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-keep-track-of-your-honeybook-payments-in-google-sheets
@@ -43,6 +45,7 @@
   evidence: https://zapier.com/apps/google-sheets/integrations/honeybook/19943/keep-track-of-your-honeybook-payments-in-google-sheets
   template: https://zapier.com/apps/google-sheets/integrations/honeybook/19943/keep-track-of-your-honeybook-payments-in-google-sheets
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-create-new-trello-cards-when-honeybook-project-are-booked
@@ -57,6 +60,7 @@
   evidence: https://zapier.com/apps/honeybook/integrations/trello/19961/create-new-trello-cards-when-honeybook-project-are-booked
   template: https://zapier.com/apps/honeybook/integrations/trello/19961/create-new-trello-cards-when-honeybook-project-are-booked
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-create-flodesk-subscribers-from-new-honeybook-inquiries
@@ -70,6 +74,7 @@
   evidence: https://zapier.com/apps/flodesk/integrations/honeybook/573834/create-flodesk-subscribers-from-new-honeybook-inquiries
   template: https://zapier.com/apps/flodesk/integrations/honeybook/573834/create-flodesk-subscribers-from-new-honeybook-inquiries
   source: template
+  relationship: ipaas-bridge
   status: pending-partner-spec
   arazzo: null
 - slug: honeybook-create-new-asana-tasks-when-honeybook-projects-are-moved-to-a-new-stage
@@ -84,6 +89,7 @@
   evidence: https://zapier.com/apps/asana/integrations/honeybook/19964/create-new-asana-tasks-when-honeybook-projects-are-moved-to-a-new-stage
   template: https://zapier.com/apps/asana/integrations/honeybook/19964/create-new-asana-tasks-when-honeybook-projects-are-moved-to-a-new-stage
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-create-clickup-tasks-for-new-honeybook-projects
@@ -98,6 +104,7 @@
   evidence: https://zapier.com/apps/clickup/integrations/honeybook/1552982/create-clickup-tasks-for-new-honeybook-projects
   template: https://zapier.com/apps/clickup/integrations/honeybook/1552982/create-clickup-tasks-for-new-honeybook-projects
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-send-out-of-office-emails-via-gmail-to-new-honeybook-inquiries
@@ -112,6 +119,7 @@
   evidence: https://zapier.com/apps/gmail/integrations/honeybook/18341/send-out-of-office-emails-via-gmail-to-new-honeybook-inquiries
   template: https://zapier.com/apps/gmail/integrations/honeybook/18341/send-out-of-office-emails-via-gmail-to-new-honeybook-inquiries
   source: template
+  relationship: ipaas-bridge
   status: pending-partner-spec
   arazzo: null
 - slug: honeybook-record-sales-in-wave-when-new-payments-are-completed-in-honeybook
@@ -126,6 +134,7 @@
   evidence: https://zapier.com/apps/honeybook/integrations/wave/349170/record-sales-in-wave-when-new-payments-are-completed-in-honeybook
   template: https://zapier.com/apps/honeybook/integrations/wave/349170/record-sales-in-wave-when-new-payments-are-completed-in-honeybook
   source: template
+  relationship: ipaas-bridge
   status: pending-partner-spec
   arazzo: null
 - slug: honeybook-create-slack-channels-when-projects-are-booked-on-honeybook
@@ -140,6 +149,7 @@
   evidence: https://zapier.com/apps/honeybook/integrations/slack/19963/create-slack-channels-when-projects-are-booked-on-honeybook
   template: https://zapier.com/apps/honeybook/integrations/slack/19963/create-slack-channels-when-projects-are-booked-on-honeybook
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-add-new-honeybook-inquiries-to-google-ads-customer-list-as-contacts
@@ -154,6 +164,7 @@
   evidence: https://zapier.com/apps/google-ads/integrations/honeybook/1626300/add-new-honeybook-inquiries-to-google-ads-customer-list-as-contacts
   template: https://zapier.com/apps/google-ads/integrations/honeybook/1626300/add-new-honeybook-inquiries-to-google-ads-customer-list-as-contacts
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-create-google-sheet-rows-for-new-inquiries-in-honeybook
@@ -168,232 +179,7 @@
   evidence: https://zapier.com/apps/google-sheets/integrations/honeybook/189367/create-google-sheet-rows-for-new-inquiries-in-honeybook
   template: https://zapier.com/apps/google-sheets/integrations/honeybook/189367/create-google-sheet-rows-for-new-inquiries-in-honeybook
   source: template
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-zoho-projects
-  label: Zoho Projects
-  partner: zoho-projects
-  partner_name: Zoho Projects
-  category: Project Management
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/zoho-projects
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: honeybook-quo
-  label: Quo
-  partner: quo
-  partner_name: Quo
-  category: Phone & SMS
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/quo
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-notion
-  label: Notion
-  partner: notion
-  partner_name: Notion
-  category: Task Management
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/notion
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-monday-com
-  label: monday.com
-  partner_name: monday.com
-  category: Project Management
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/monday
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: honeybook-airtable
-  label: Airtable
-  partner: airtable
-  partner_name: Airtable
-  category: Databases
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/airtable
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-squarespace-forms
-  label: Squarespace Forms
-  partner: squarespace
-  partner_name: Squarespace Forms
-  category: Forms & Surveys
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/squarespace-forms
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-google-calendar
-  label: Google Calendar
-  partner: google-calendar
-  partner_name: Google Calendar
-  category: Calendar
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/google-calendar
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-microsoft-outlook
-  label: Microsoft Outlook
-  partner: microsoft-outlook
-  partner_name: Microsoft Outlook
-  category: Calendar
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/microsoft-outlook
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-leadconnector
-  label: LeadConnector
-  partner_name: LeadConnector
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/leadconnector
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: honeybook-hubspot
-  label: HubSpot
-  partner: hubspot
-  partner_name: HubSpot
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/hubspot
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-square
-  label: Square
-  partner: square
-  partner_name: Square
-  category: eCommerce
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/square
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-wix
-  label: Wix
-  partner: wix
-  partner_name: Wix
-  category: Website Builders
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/wix
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-facebook-lead-ads
-  label: Facebook Lead Ads
-  partner: facebook-lead-ads
-  partner_name: Facebook Lead Ads
-  category: Ads & Conversion
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/facebook-lead-ads
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-mailerlite
-  label: MailerLite
-  partner: mailerlite
-  partner_name: MailerLite
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/mailerlite
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-activecampaign
-  label: ActiveCampaign
-  partner: activecampaign
-  partner_name: ActiveCampaign
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/activecampaign
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-todoist
-  label: Todoist
-  partner: todoist
-  partner_name: Todoist
-  category: Task Management
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/todoist
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-freshbooks
-  label: FreshBooks
-  partner: freshbooks
-  partner_name: FreshBooks
-  category: Accounting
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/freshbooks
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-google-docs
-  label: Google Docs
-  partner: google-docs
-  partner_name: Google Docs
-  category: Documents
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/google-docs
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: honeybook-jotform
-  label: Jotform
-  partner: jotform
-  partner_name: Jotform
-  category: Forms & Surveys
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/honeybook/integrations/jotform
-  source: edge
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: honeybook-freshbooks-own
@@ -446,4 +232,250 @@
   source: edge
   relationship: platform-app
   status: not-a-workflow
+  arazzo: null
+- slug: honeybook-zoho-projects
+  label: Zoho Projects
+  partner: zoho-projects
+  partner_name: Zoho Projects
+  category: Project Management
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/zoho-projects
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: honeybook-quo
+  label: Quo
+  partner: quo
+  partner_name: Quo
+  category: Phone & SMS
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/quo
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-notion
+  label: Notion
+  partner: notion
+  partner_name: Notion
+  category: Task Management
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/notion
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-monday-com
+  label: monday.com
+  partner: monday-com
+  partner_name: monday.com
+  category: Project Management
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/monday
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-airtable
+  label: Airtable
+  partner: airtable
+  partner_name: Airtable
+  category: Databases
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/airtable
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-squarespace-forms
+  label: Squarespace Forms
+  partner: squarespace
+  partner_name: Squarespace Forms
+  category: Forms & Surveys
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/squarespace-forms
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-google-calendar
+  label: Google Calendar
+  partner: google-calendar
+  partner_name: Google Calendar
+  category: Calendar
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-calendar
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-microsoft-outlook
+  label: Microsoft Outlook
+  partner: microsoft-outlook
+  partner_name: Microsoft Outlook
+  category: Calendar
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/microsoft-outlook
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-leadconnector
+  label: LeadConnector
+  partner_name: LeadConnector
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/leadconnector
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: honeybook-hubspot
+  label: HubSpot
+  partner: hubspot
+  partner_name: HubSpot
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/hubspot
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-square
+  label: Square
+  partner: square
+  partner_name: Square
+  category: eCommerce
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/square
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-facebook-lead-ads
+  label: Facebook Lead Ads
+  partner: facebook-lead-ads
+  partner_name: Facebook Lead Ads
+  category: Ads & Conversion
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/facebook-lead-ads
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-wix
+  label: Wix
+  partner: wix
+  partner_name: Wix
+  category: Website Builders
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/wix
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-mailerlite
+  label: MailerLite
+  partner: mailerlite
+  partner_name: MailerLite
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/mailerlite
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-activecampaign
+  label: ActiveCampaign
+  partner: activecampaign
+  partner_name: ActiveCampaign
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/activecampaign
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-todoist
+  label: Todoist
+  partner: todoist
+  partner_name: Todoist
+  category: Task Management
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/todoist
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-freshbooks
+  label: FreshBooks
+  partner: freshbooks
+  partner_name: FreshBooks
+  category: Accounting
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/freshbooks
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-google-docs
+  label: Google Docs
+  partner: google-docs
+  partner_name: Google Docs
+  category: Documents
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/google-docs
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: honeybook-jotform
+  label: Jotform
+  partner: jotform
+  partner_name: Jotform
+  category: Forms & Surveys
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/honeybook/integrations/jotform
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
   arazzo: null
