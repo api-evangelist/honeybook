@@ -1645,3 +1645,9 @@ x-tagGroups:
   - Pipeline
   - Workspaces
   - Projects
+x-provenance:
+  method: harvested
+  publisher: HoneyBook
+  source: https://developers.honeybook.com/assets/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
